@@ -86,6 +86,7 @@ export async function POST(request: NextRequest) {
         familyId: targetFamilyId,
         location: location || null,
         paidById: familyMember.id,
+        userId: session.user.id,
         date: date ? new Date(date) : new Date(),
       },
       include: {
