@@ -11,12 +11,17 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const familyId = searchParams.get('familyId')
+    const familyIdParam = searchParams.get('familyId')
+    const targetFamilyId = familyIdParam || session.user.familyId
+
+    if (!targetFamilyId) {
+      return NextResponse.json({ error: 'No family ID available' }, { status: 400 })
+    }
 
     // Ottieni le spese della famiglia dell'utente
     const expenses = await prisma.expense.findMany({
       where: {
-        familyId: familyId || session.user.familyId,
+        familyId: targetFamilyId,
         family: {
           members: {
             some: {
@@ -53,13 +58,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { description, amount, categoryId, familyId, location, customSplit, date } = body
+    const { description, amount, categoryId, familyId, location, date } = body
+    const targetFamilyId = familyId || session.user.familyId
+
+    if (!targetFamilyId) {
+      return NextResponse.json({ error: 'No family ID available' }, { status: 400 })
+    }
 
     // Trova il membro famiglia dell'utente
     const familyMember = await prisma.familyMember.findFirst({
       where: {
         userId: session.user.id,
-        familyId: familyId || session.user.familyId
+        familyId: targetFamilyId
       }
     })
 
@@ -73,9 +83,8 @@ export async function POST(request: NextRequest) {
         description,
         amount: parseFloat(amount),
         categoryId,
-        familyId: familyId || session.user.familyId,
+        familyId: targetFamilyId,
         location: location || null,
-        customSplit: customSplit || null,
         paidById: familyMember.id,
         date: date ? new Date(date) : new Date(),
       },
