@@ -12,7 +12,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const { id } = params
     const body = await request.json()
-    const { description, amount, categoryId, location, customSplit } = body
+    const { description, amount, categoryId, location } = body
 
     // Verifica che la spesa esista e appartenga alla famiglia dell'utente
     const existingExpense = await prisma.expense.findFirst({
@@ -40,7 +40,6 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         amount: parseFloat(amount),
         categoryId,
         location: location || null,
-        customSplit: customSplit || null,
       },
       include: {
         category: true,
