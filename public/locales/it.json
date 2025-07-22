@@ -16,13 +16,30 @@
     "signOut": "Esci",
     "email": "Email",
     "password": "Password",
+    "username": "Nome Utente",
     "signInWithGoogle": "Accedi con Google",
     "signInWithCredentials": "Accedi con Email",
     "testCredentials": "Credenziali di test",
     "showPassword": "Mostra password",
     "hidePassword": "Nascondi password",
     "signingIn": "Accesso in corso...",
-    "invalidCredentials": "Credenziali non valide"
+    "invalidCredentials": "Credenziali non valide",
+    "createFamilyGroup": "Crea Gruppo Famiglia",
+    "createFamilyGroupDescription": "Crea un nuovo gruppo famiglia e invita i tuoi familiari",
+    "familyName": "Nome Famiglia",
+    "familyNamePlaceholder": "es. Famiglia Rossi",
+    "adminName": "Nome Amministratore",
+    "adminNamePlaceholder": "Il tuo nome",
+    "usernamePlaceholder": "Scegli un nome utente",
+    "passwordPlaceholder": "Scegli una password",
+    "confirmPassword": "Conferma Password",
+    "confirmPasswordPlaceholder": "Ripeti la password",
+    "passwordsDoNotMatch": "Le password non corrispondono",
+    "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+    "registrationFailed": "Registrazione fallita",
+    "loginAfterRegistrationFailed": "Accesso automatico fallito dopo la registrazione",
+    "creating": "Creazione in corso...",
+    "alreadyHaveAccount": "Hai già un account? Accedi qui"
   },
   "dashboard": {
     "title": "Gestionale Spese Famiglia",
@@ -85,7 +102,16 @@
     "defaultSplit": "Ripartizione Predefinita",
     "memberAdded": "Membro aggiunto con successo",
     "memberUpdated": "Membro aggiornato con successo",
-    "memberDeleted": "Membro eliminato con successo"
+    "memberDeleted": "Membro eliminato con successo",
+    "generateCredentials": "Genera Credenziali",
+    "memberCredentials": "Credenziali Membro",
+    "shareCredentials": "Condividi queste credenziali con il membro della famiglia",
+    "credentialsGenerated": "Credenziali generate con successo",
+    "role": "Ruolo",
+    "admin": "Amministratore",
+    "member": "Membro",
+    "active": "Attivo",
+    "inactive": "Inattivo"
   },
   "balance": {
     "title": "Bilancio Famiglia",
@@ -97,5 +123,12 @@
     "isOwed": "gli devono",
     "settled": "In pari",
     "summary": "Riepilogo"
+  },
+  "navigation": {
+    "expenses": "Spese",
+    "categories": "Categorie",
+    "balances": "Bilanci",
+    "family": "Famiglia",
+    "members": "Membri"
   }
 }

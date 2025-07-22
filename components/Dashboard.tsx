@@ -10,6 +10,7 @@ import AddExpenseModal from './AddExpenseModal'
 import FamilySettings from './FamilySettings'
 import CategoryManager from './CategoryManager'
 import BalanceManager from './BalanceManager'
+import FamilyMemberManager from './FamilyMemberManager'
 import { Expense, Family, FamilyMember } from '@/types'
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -19,7 +20,7 @@ export default function Dashboard() {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
-  const [activeTab, setActiveTab] = useState<'expenses' | 'categories' | 'balances' | 'family'>('expenses')
+  const [activeTab, setActiveTab] = useState<'expenses' | 'categories' | 'balances' | 'family' | 'members'>('expenses')
   const [isLoading, setIsLoading] = useState(true)
   const { t } = useTranslation()
 
@@ -286,6 +287,18 @@ export default function Dashboard() {
             >
               {t('navigation.family')}
             </button>
+            {session?.user?.role === 'admin' && (
+              <button
+                onClick={() => setActiveTab('members')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  activeTab === 'members'
+                    ? 'bg-white text-primary-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {t('navigation.members')}
+              </button>
+            )}
         </div>
 
         {/* Content */}
@@ -322,6 +335,10 @@ export default function Dashboard() {
 
         {activeTab === 'family' && family && (
           <FamilySettings family={family} onUpdate={setFamily} />
+        )}
+
+        {activeTab === 'members' && family && session?.user?.role === 'admin' && (
+          <FamilyMemberManager familyId={family.id} />
         )}
       </main>
 

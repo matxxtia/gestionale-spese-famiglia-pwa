@@ -9,7 +9,7 @@ import { LogIn, Users, DollarSign, Shield, Eye, EyeOff } from 'lucide-react'
 export default function SignIn() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -31,18 +31,18 @@ export default function SignIn() {
 
     try {
       const result = await signIn('credentials', {
-        email,
+        username,
         password,
         redirect: false,
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        setError('Nome utente o password non validi')
       } else {
         router.push('/')
       }
     } catch (error) {
-      setError('An error occurred during sign in')
+      setError('Si è verificato un errore durante l\'accesso')
     } finally {
       setIsLoading(false)
     }
@@ -77,11 +77,11 @@ export default function SignIn() {
           </motion.div>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Family Expense Manager
+            Gestionale Spese Famiglia
           </h1>
           
           <p className="text-gray-600 mb-8">
-            Track and manage your family expenses with ease. Share costs, sync in real-time, and stay organized.
+            Gestisci le spese della tua famiglia con facilità. Condividi i costi, sincronizza in tempo reale e rimani organizzato.
           </p>
 
           <div className="grid grid-cols-3 gap-4 mb-8">
@@ -92,7 +92,7 @@ export default function SignIn() {
               className="text-center"
             >
               <Users className="w-6 h-6 text-primary-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Family Sharing</p>
+              <p className="text-sm text-gray-600">Condivisione Famiglia</p>
             </motion.div>
             
             <motion.div
@@ -102,7 +102,7 @@ export default function SignIn() {
               className="text-center"
             >
               <Shield className="w-6 h-6 text-primary-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Secure Sync</p>
+              <p className="text-sm text-gray-600">Sincronizzazione Sicura</p>
             </motion.div>
             
             <motion.div
@@ -112,23 +112,26 @@ export default function SignIn() {
               className="text-center"
             >
               <DollarSign className="w-6 h-6 text-primary-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Cost Tracking</p>
+              <p className="text-sm text-gray-600">Tracciamento Costi</p>
             </motion.div>
           </div>
 
-          {/* Test Credentials Info */}
+          {/* Registration Link */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left"
+            className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-center"
           >
-            <h3 className="text-sm font-medium text-blue-800 mb-2">Test Credentials:</h3>
-            <div className="text-xs text-blue-700 space-y-1">
-              <div><strong>Email:</strong> test@family.com</div>
-              <div><strong>Password:</strong> password</div>
-              <div className="mt-2"><strong>Or:</strong> admin@family.com / password</div>
-            </div>
+            <p className="text-sm text-green-800 mb-2">
+              Non hai ancora un gruppo famiglia?
+            </p>
+            <a
+              href="/auth/register"
+              className="text-green-600 hover:text-green-700 font-medium text-sm underline"
+            >
+              Crea il tuo gruppo famiglia
+            </a>
           </motion.div>
 
           {/* Credentials Form */}
@@ -140,16 +143,16 @@ export default function SignIn() {
             className="space-y-4 mb-6 text-left"
           >
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Nome Utente
               </label>
               <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Enter your email"
+                placeholder="Inserisci il tuo nome utente"
                 required
               />
             </div>
@@ -165,7 +168,7 @@ export default function SignIn() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="Enter your password"
+                  placeholder="Inserisci la tua password"
                   required
                 />
                 <button
@@ -193,7 +196,7 @@ export default function SignIn() {
               disabled={isLoading}
               className="w-full bg-primary-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? 'Accesso in corso...' : 'Accedi'}
             </button>
           </motion.form>
 
@@ -203,7 +206,7 @@ export default function SignIn() {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">Oppure continua con</span>
             </div>
           </div>
 
@@ -236,13 +239,13 @@ export default function SignIn() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Continue with Google
+                Continua con Google
               </>
             )}
           </motion.button>
           
           <p className="text-xs text-gray-500 mt-4">
-            By signing in, you agree to our terms of service and privacy policy.
+            Effettuando l'accesso, accetti i nostri termini di servizio e la politica sulla privacy.
           </p>
         </div>
       </motion.div>

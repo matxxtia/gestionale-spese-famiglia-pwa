@@ -1,42 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-// Note: In a real app, authOptions would be imported from a shared config
-// For now, we'll skip session validation in mock mode
-// import { authOptions } from '../../auth/[...nextauth]/route'
-
-// Mock data - in a real app, this would come from a database
-// This should be shared with the main expenses route
-let expenses: any[] = []
+import { authOptions } from '../../../../lib/auth'
+import { prisma } from '../../../../lib/prisma'
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { id } = params
     const body = await request.json()
     const { description, amount, categoryId, location, customSplit } = body
 
-    const expenseIndex = expenses.findIndex(expense => expense.id === id)
+    // Verifica che la spesa esista e appartenga alla famiglia dell'utente
+    const existingExpense = await prisma.expense.findFirst({
+      where: {
+        id,
+        family: {
+          members: {
+            some: {
+              userId: session.user.id
+            }
+          }
+        }
+      }
+    })
     
-    if (expenseIndex === -1) {
+    if (!existingExpense) {
       return NextResponse.json({ error: 'Expense not found' }, { status: 404 })
     }
 
-    const updatedExpense = {
-      ...expenses[expenseIndex],
-      description,
-      amount: parseFloat(amount),
-      categoryId,
-      location: location || null,
-      customSplit: customSplit || null,
-      updatedAt: new Date().toISOString()
-    }
-
-    expenses[expenseIndex] = updatedExpense
+    // Aggiorna la spesa
+    const updatedExpense = await prisma.expense.update({
+      where: { id },
+      data: {
+        description,
+        amount: parseFloat(amount),
+        categoryId,
+        location: location || null,
+        customSplit: customSplit || null,
+      },
+      include: {
+        category: true,
+        paidBy: {
+          include: {
+            user: true
+          }
+        }
+      }
+    })
 
     return NextResponse.json(updatedExpense)
   } catch (error) {
@@ -47,20 +61,35 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { id } = params
-    const expenseIndex = expenses.findIndex(expense => expense.id === id)
     
-    if (expenseIndex === -1) {
+    // Verifica che la spesa esista e appartenga alla famiglia dell'utente
+    const expense = await prisma.expense.findFirst({
+      where: {
+        id,
+        family: {
+          members: {
+            some: {
+              userId: session.user.id
+            }
+          }
+        }
+      }
+    })
+    
+    if (!expense) {
       return NextResponse.json({ error: 'Expense not found' }, { status: 404 })
     }
 
-    expenses.splice(expenseIndex, 1)
+    // Elimina la spesa
+    await prisma.expense.delete({
+      where: { id }
+    })
 
     return NextResponse.json({ message: 'Expense deleted successfully' })
   } catch (error) {

@@ -40,9 +40,11 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
+  username      String?   @unique
+  password      String?
   accounts      Account[]
   sessions      Session[]
   families      FamilyMember[]
@@ -74,8 +76,9 @@ model FamilyMember {
   familyId String
   userId   String
   name     String
-  role     String @default("member")
+  role     String @default("member") // "admin" or "member"
   sharePercentage Float @default(50.0)
+  isActive Boolean @default(true)
   
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)

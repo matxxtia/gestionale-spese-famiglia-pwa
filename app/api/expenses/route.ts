@@ -1,28 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-// Note: In a real app, authOptions would be imported from a shared config
-// For now, we'll skip session validation in mock mode
-// import { authOptions } from '../auth/[...nextauth]/route'
-
-// Mock data - in a real app, this would come from a database
-let expenses: any[] = []
+import { authOptions } from '../../../lib/auth'
+import { prisma } from '../../../lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { searchParams } = new URL(request.url)
     const familyId = searchParams.get('familyId')
 
-    const filteredExpenses = familyId 
-      ? expenses.filter(expense => expense.familyId === familyId)
-      : expenses
+    // Ottieni le spese della famiglia dell'utente
+    const expenses = await prisma.expense.findMany({
+      where: {
+        familyId: familyId || session.user.familyId,
+        family: {
+          members: {
+            some: {
+              userId: session.user.id
+            }
+          }
+        }
+      },
+      include: {
+        category: true,
+        paidBy: {
+          include: {
+            user: true
+          }
+        }
+      },
+      orderBy: {
+        date: 'desc'
+      }
+    })
 
-    return NextResponse.json(filteredExpenses)
+    return NextResponse.json(expenses)
   } catch (error) {
     console.error('Error fetching expenses:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -31,30 +47,47 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
-
-    const body = await request.json()
-    const { description, amount, categoryId, familyId, location, customSplit } = body
-
-    const newExpense = {
-      id: Date.now().toString(),
-      description,
-      amount: parseFloat(amount),
-      categoryId,
-      familyId,
-      location: location || null,
-      customSplit: customSplit || null,
-      userId: '1', // Mock user ID
-      date: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    expenses.push(newExpense)
+    const body = await request.json()
+    const { description, amount, categoryId, familyId, location, customSplit, date } = body
+
+    // Trova il membro famiglia dell'utente
+    const familyMember = await prisma.familyMember.findFirst({
+      where: {
+        userId: session.user.id,
+        familyId: familyId || session.user.familyId
+      }
+    })
+
+    if (!familyMember) {
+      return NextResponse.json({ error: 'User not found in family' }, { status: 403 })
+    }
+
+    // Crea la nuova spesa
+    const newExpense = await prisma.expense.create({
+      data: {
+        description,
+        amount: parseFloat(amount),
+        categoryId,
+        familyId: familyId || session.user.familyId,
+        location: location || null,
+        customSplit: customSplit || null,
+        paidById: familyMember.id,
+        date: date ? new Date(date) : new Date(),
+      },
+      include: {
+        category: true,
+        paidBy: {
+          include: {
+            user: true
+          }
+        }
+      }
+    })
 
     return NextResponse.json(newExpense, { status: 201 })
   } catch (error) {
