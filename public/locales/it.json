@@ -1,0 +1,101 @@
+{
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "add": "Aggiungi",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "success": "Successo",
+    "confirm": "Conferma",
+    "close": "Chiudi"
+  },
+  "auth": {
+    "signIn": "Accedi",
+    "signOut": "Esci",
+    "email": "Email",
+    "password": "Password",
+    "signInWithGoogle": "Accedi con Google",
+    "signInWithCredentials": "Accedi con Email",
+    "testCredentials": "Credenziali di test",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password",
+    "signingIn": "Accesso in corso...",
+    "invalidCredentials": "Credenziali non valide"
+  },
+  "dashboard": {
+    "title": "Gestionale Spese Famiglia",
+    "welcome": "Benvenuto",
+    "totalExpenses": "Spese Totali",
+    "thisMonth": "Questo Mese",
+    "addExpense": "Aggiungi Spesa",
+    "recentExpenses": "Spese Recenti",
+    "noExpenses": "Nessuna spesa registrata",
+    "familySettings": "Impostazioni Famiglia",
+    "balance": "Bilancio",
+    "categories": "Categorie"
+  },
+  "expenses": {
+    "title": "Spese",
+    "description": "Descrizione",
+    "amount": "Importo",
+    "category": "Categoria",
+    "paidBy": "Pagato da",
+    "date": "Data",
+    "addExpense": "Aggiungi Spesa",
+    "editExpense": "Modifica Spesa",
+    "deleteExpense": "Elimina Spesa",
+    "expenseAdded": "Spesa aggiunta con successo",
+    "expenseUpdated": "Spesa aggiornata con successo",
+    "expenseDeleted": "Spesa eliminata con successo",
+    "customSplit": "Ripartizione Personalizzata",
+    "useDefaultSplit": "Usa ripartizione predefinita",
+    "splitPercentage": "Percentuale ripartizione",
+    "total": "Totale"
+  },
+  "categories": {
+    "title": "Categorie",
+    "name": "Nome",
+    "color": "Colore",
+    "addCategory": "Aggiungi Categoria",
+    "editCategory": "Modifica Categoria",
+    "deleteCategory": "Elimina Categoria",
+    "categoryAdded": "Categoria aggiunta con successo",
+    "categoryUpdated": "Categoria aggiornata con successo",
+    "categoryDeleted": "Categoria eliminata con successo",
+    "defaultCategories": {
+      "food": "Alimentari",
+      "transport": "Trasporti",
+      "utilities": "Utenze",
+      "entertainment": "Intrattenimento",
+      "healthcare": "Salute",
+      "shopping": "Shopping",
+      "other": "Altro"
+    }
+  },
+  "family": {
+    "title": "Impostazioni Famiglia",
+    "members": "Membri Famiglia",
+    "addMember": "Aggiungi Membro",
+    "editMember": "Modifica Membro",
+    "deleteMember": "Elimina Membro",
+    "memberName": "Nome Membro",
+    "splitPercentage": "Percentuale Ripartizione",
+    "defaultSplit": "Ripartizione Predefinita",
+    "memberAdded": "Membro aggiunto con successo",
+    "memberUpdated": "Membro aggiornato con successo",
+    "memberDeleted": "Membro eliminato con successo"
+  },
+  "balance": {
+    "title": "Bilancio Famiglia",
+    "whoOwesWho": "Chi deve a chi",
+    "totalPaid": "Totale pagato",
+    "shouldPay": "Dovrebbe pagare",
+    "balance": "Bilancio",
+    "owes": "deve",
+    "isOwed": "gli devono",
+    "settled": "In pari",
+    "summary": "Riepilogo"
+  }
+}
