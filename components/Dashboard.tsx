@@ -26,6 +26,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Initialize with mock data for demo
+    const now = new Date('2024-01-15T10:00:00Z') // Fixed date to avoid hydration mismatch
     const mockFamily: Family = {
       id: '1',
       name: 'My Family',
@@ -54,8 +55,8 @@ export default function Dashboard() {
         { id: '4', name: 'Transportation', icon: 'car', color: '#EF4444', familyId: '1' },
         { id: '5', name: 'Healthcare', icon: 'heart', color: '#EC4899', familyId: '1' }
       ],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: now,
+      updatedAt: now
     }
 
     const mockExpenses: Expense[] = [
@@ -69,8 +70,8 @@ export default function Dashboard() {
         familyId: '1',
         paidById: '1',
         userId: session?.user?.id || '1',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: now,
+        updatedAt: now
       },
       {
         id: '2',
@@ -81,8 +82,8 @@ export default function Dashboard() {
         familyId: '1',
         paidById: '2',
         userId: '2',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: now,
+        updatedAt: now
       },
       {
         id: '3',
@@ -94,8 +95,8 @@ export default function Dashboard() {
         familyId: '1',
         paidById: '1',
         userId: session?.user?.id || '1',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: now,
+        updatedAt: now
       }
     ]
 
@@ -107,8 +108,8 @@ export default function Dashboard() {
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0)
   const thisMonthExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date)
-    const now = new Date()
-    return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear()
+    const currentDate = new Date('2024-01-15T10:00:00Z') // Fixed date to avoid hydration mismatch
+    return expenseDate.getMonth() === currentDate.getMonth() && expenseDate.getFullYear() === currentDate.getFullYear()
   }).reduce((sum, expense) => sum + expense.amount, 0)
 
   const handleAddExpense = async (expenseData: any) => {
