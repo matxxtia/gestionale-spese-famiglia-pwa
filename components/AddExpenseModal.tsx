@@ -35,12 +35,23 @@ export default function AddExpenseModal({ family, onAdd, onClose, editingExpense
   )
   const { t } = useTranslation()
 
+  // Helper function to format date
+  const formatDate = (date: Date | string): string => {
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0]
+    }
+    if (typeof date === 'string') {
+      return date.split('T')[0]
+    }
+    return new Date().toISOString().split('T')[0]
+  }
+
   const form = useForm<ExpenseFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: editingExpense ? {
       description: editingExpense.description,
       amount: editingExpense.amount.toString(),
-      date: editingExpense.date instanceof Date ? editingExpense.date.toISOString().split('T')[0] : (typeof editingExpense.date === 'string' ? editingExpense.date.split('T')[0] : new Date().toISOString().split('T')[0]),
+      date: formatDate(editingExpense.date),
       categoryId: editingExpense.categoryId,
       paidById: editingExpense.paidById,
       location: editingExpense.location || '',
