@@ -40,7 +40,7 @@ export default function AddExpenseModal({ family, onAdd, onClose, editingExpense
     defaultValues: editingExpense ? {
       description: editingExpense.description,
       amount: editingExpense.amount.toString(),
-      date: editingExpense.date.toISOString().split('T')[0],
+      date: editingExpense.date instanceof Date ? editingExpense.date.toISOString().split('T')[0] : editingExpense.date.split('T')[0],
       categoryId: editingExpense.categoryId,
       paidById: editingExpense.paidById,
       location: editingExpense.location || '',

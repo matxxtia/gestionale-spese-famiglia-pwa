@@ -25,91 +25,45 @@ export default function Dashboard() {
   const { t } = useTranslation()
 
   useEffect(() => {
-    // Initialize with mock data for demo
-    const now = new Date('2024-01-15T10:00:00Z') // Fixed date to avoid hydration mismatch
-    const mockFamily: Family = {
-      id: '1',
-      name: 'My Family',
-      members: [
-        {
-          id: '1',
-          name: session?.user?.name || 'You',
-          role: 'admin',
-          splitPercentage: 50,
-          userId: session?.user?.id || '1',
-          familyId: '1'
-        },
-        {
-          id: '2',
-          name: 'Partner',
-          role: 'member',
-          splitPercentage: 50,
-          userId: '2',
-          familyId: '1'
+    const fetchData = async () => {
+      if (session?.user?.familyId) {
+        try {
+          setIsLoading(true)
+          // Fetch family data
+          const familyRes = await fetch(`/api/family`);
+          if (familyRes.ok) {
+            const familyData = await familyRes.json();
+            setFamily(familyData);
+            console.log('Family data:', familyData);
+          } else {
+            console.error('Failed to fetch family data');
+          }
+
+          // Fetch expenses
+          const expensesRes = await fetch(`/api/expenses`);
+          if (expensesRes.ok) {
+            const expensesData = await expensesRes.json();
+            setExpenses(expensesData);
+            console.log('Expenses data:', expensesData);
+          } else {
+            console.error('Failed to fetch expenses');
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error)
+        } finally {
+          setIsLoading(false)
         }
-      ],
-      categories: [
-        { id: '1', name: 'Groceries', icon: 'shopping-cart', color: '#10B981', familyId: '1' },
-        { id: '2', name: 'Utilities', icon: 'zap', color: '#F59E0B', familyId: '1' },
-        { id: '3', name: 'Entertainment', icon: 'film', color: '#8B5CF6', familyId: '1' },
-        { id: '4', name: 'Transportation', icon: 'car', color: '#EF4444', familyId: '1' },
-        { id: '5', name: 'Healthcare', icon: 'heart', color: '#EC4899', familyId: '1' }
-      ],
-      createdAt: now,
-      updatedAt: now
+      }
     }
 
-    const mockExpenses: Expense[] = [
-      {
-        id: '1',
-        amount: 85.50,
-        description: 'Weekly grocery shopping',
-        date: new Date('2024-01-15'),
-        location: 'Supermarket',
-        categoryId: '1',
-        familyId: '1',
-        paidById: '1',
-        userId: session?.user?.id || '1',
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        id: '2',
-        amount: 120.00,
-        description: 'Electricity bill',
-        date: new Date('2024-01-14'),
-        categoryId: '2',
-        familyId: '1',
-        paidById: '2',
-        userId: '2',
-        createdAt: now,
-        updatedAt: now
-      },
-      {
-        id: '3',
-        amount: 45.00,
-        description: 'Movie tickets',
-        date: new Date('2024-01-13'),
-        location: 'Cinema',
-        categoryId: '3',
-        familyId: '1',
-        paidById: '1',
-        userId: session?.user?.id || '1',
-        createdAt: now,
-        updatedAt: now
-      }
-    ]
-
-    setFamily(mockFamily)
-    setExpenses(mockExpenses)
-    setIsLoading(false)
+    fetchData()
   }, [session])
 
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0)
   const thisMonthExpenses = expenses.filter(expense => {
     const expenseDate = new Date(expense.date)
-    const currentDate = new Date('2024-01-15T10:00:00Z') // Fixed date to avoid hydration mismatch
-    return expenseDate.getMonth() === currentDate.getMonth() && expenseDate.getFullYear() === currentDate.getFullYear()
+    const now = new Date()
+    return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear()
   }).reduce((sum, expense) => sum + expense.amount, 0)
 
   const handleAddExpense = async (expenseData: any) => {
@@ -154,9 +108,15 @@ export default function Dashboard() {
         ))
         setEditingExpense(null)
         setIsAddExpenseModalOpen(false)
+        console.log('Expense updated successfully')
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to update expense:', errorData.error)
+        alert('Errore durante la modifica della spesa: ' + (errorData.error || 'Errore sconosciuto'))
       }
     } catch (error) {
       console.error('Error updating expense:', error)
+      alert('Errore di connessione durante la modifica della spesa')
     }
   }
 
@@ -168,15 +128,55 @@ export default function Dashboard() {
 
       if (response.ok) {
         setExpenses(prev => prev.filter(exp => exp.id !== expenseId))
+        console.log('Expense deleted successfully')
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to delete expense:', errorData.error)
+        alert('Errore durante l\'eliminazione della spesa: ' + (errorData.error || 'Errore sconosciuto'))
       }
     } catch (error) {
       console.error('Error deleting expense:', error)
+      alert('Errore di connessione durante l\'eliminazione della spesa')
     }
   }
 
   const openEditExpense = (expense: Expense) => {
     setEditingExpense(expense)
     setIsAddExpenseModalOpen(true)
+  }
+
+  const handleFamilyUpdate = async (updatedFamily: Family) => {
+    try {
+      // Update local state immediately for better UX
+      setFamily(updatedFamily)
+      
+      // Save each member's changes to the database
+      for (const member of updatedFamily.members) {
+        const response = await fetch(`/api/family/${updatedFamily.id}/members/${member.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: member.name,
+            sharePercentage: member.sharePercentage,
+            isActive: true
+          }),
+        })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Failed to update member:', errorData.error)
+          alert('Errore durante il salvataggio: ' + (errorData.error || 'Errore sconosciuto'))
+          return
+        }
+      }
+      
+      console.log('Family members updated successfully')
+    } catch (error) {
+      console.error('Error updating family:', error)
+      alert('Errore di connessione durante il salvataggio')
+    }
   }
 
   if (isLoading) {
@@ -335,7 +335,7 @@ export default function Dashboard() {
         )}
 
         {activeTab === 'family' && family && (
-          <FamilySettings family={family} onUpdate={setFamily} />
+          <FamilySettings family={family} onUpdate={handleFamilyUpdate} />
         )}
 
         {activeTab === 'members' && family && session?.user?.role === 'admin' && (

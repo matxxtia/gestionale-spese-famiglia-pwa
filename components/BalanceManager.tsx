@@ -71,7 +71,7 @@ export default function BalanceManager({ family, expenses }: BalanceManagerProps
         // Use default family split
         familyMembers.forEach((member: FamilyMember) => {
           if (balances[member.id]) {
-            balances[member.id].shouldPay += (expense.amount * member.splitPercentage) / 100
+            balances[member.id].shouldPay += (expense.amount * member.sharePercentage) / 100
           }
         })
       }

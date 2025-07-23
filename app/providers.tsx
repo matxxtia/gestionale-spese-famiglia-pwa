@@ -2,7 +2,6 @@
 
 import { SessionProvider } from 'next-auth/react'
 import { ReactNode } from 'react'
-import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration'
 
 interface ProvidersProps {
   children: ReactNode
@@ -11,7 +10,6 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      <ServiceWorkerRegistration />
       {children}
     </SessionProvider>
   )

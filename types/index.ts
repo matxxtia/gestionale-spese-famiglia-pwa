@@ -23,7 +23,7 @@ export interface FamilyMember {
   userId: string
   name: string
   role: string
-  splitPercentage: number
+  sharePercentage: number
 }
 
 export interface Category {

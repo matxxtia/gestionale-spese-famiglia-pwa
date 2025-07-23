@@ -16,7 +16,7 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
   const [showAddMember, setShowAddMember] = useState(false)
   const [memberShares, setMemberShares] = useState<Record<string, number>>(
     family.members.reduce((acc, member) => {
-      acc[member.id] = member.splitPercentage
+      acc[member.id] = member.sharePercentage
       return acc
     }, {} as Record<string, number>)
   )
@@ -36,7 +36,7 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
       id: Date.now().toString(),
       name: newMemberName.trim(),
       role: 'member',
-      splitPercentage: 0,
+      sharePercentage: 0,
       userId: Date.now().toString(),
       familyId: family.id
     }
