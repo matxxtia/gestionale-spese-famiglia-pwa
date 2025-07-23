@@ -64,7 +64,6 @@ export async function POST(request: NextRequest) {
         { name: 'Svago', icon: 'gamepad-2', color: '#F59E0B', familyId: family.id },
         { name: 'Altro', icon: 'more-horizontal', color: '#6B7280', familyId: family.id },
       ],
-      skipDuplicates: true,
     });
 
     return NextResponse.json(
