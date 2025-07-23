@@ -36,6 +36,8 @@ export default function SignIn() {
         redirect: false,
       })
 
+      console.log('signIn result:', result)
+
       if (result?.error) {
         setError('Nome utente o password non validi')
       } else {
