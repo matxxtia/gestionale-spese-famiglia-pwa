@@ -7,7 +7,6 @@ const prisma = new PrismaClient()
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  url: process.env.NEXTAUTH_URL,
   providers: [
     CredentialsProvider({
       name: 'credentials',
