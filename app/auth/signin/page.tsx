@@ -26,6 +26,7 @@ export default function SignIn() {
 
   const handleCredentialsSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
+    alert('Form submitted!')
     setIsLoading(true)
     setError('')
 
