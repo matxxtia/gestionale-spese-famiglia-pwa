@@ -25,31 +25,33 @@ export default function SignIn() {
   }, [router])
 
   const handleCredentialsSignIn = async (e: React.FormEvent) => {
-    e.preventDefault()
-    alert('Form submitted!')
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     try {
       const result = await signIn('credentials', {
         username,
         password,
         redirect: false,
-      })
-
-      console.log('signIn result:', result)
+      });
 
       if (result?.error) {
-        setError('Nome utente o password non validi')
+        console.error('SignIn Error:', result.error);
+        setError('Nome utente o password non validi. Controlla la console per i dettagli.');
+      } else if (!result?.ok) {
+        console.error('SignIn failed with status:', result?.status);
+        setError('Accesso non riuscito. Riprova.');
       } else {
-        router.push('/')
+        router.push('/');
       }
     } catch (error) {
-      setError('Si è verificato un errore durante l\'accesso')
+      console.error('Exception during sign-in:', error);
+      setError('Si è verificato un errore imprevisto durante l\'accesso.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
 
 
