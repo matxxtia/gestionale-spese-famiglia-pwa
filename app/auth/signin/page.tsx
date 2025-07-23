@@ -35,6 +35,7 @@ export default function SignIn() {
         password,
         redirect: false,
       });
+      console.log('signIn result:', result);
 
       if (result?.error) {
         console.error('SignIn Error:', result.error);
