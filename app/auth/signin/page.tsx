@@ -30,25 +30,14 @@ export default function SignIn() {
     setError('');
 
     try {
-      const result = await signIn('credentials', {
+      await signIn('credentials', {
         username,
         password,
-        redirect: false,
+        callbackUrl: '/',
       });
-      console.log('signIn result:', result);
-
-      if (result?.error) {
-        console.error('SignIn Error:', result.error);
-        setError(result.error);
-      } else if (!result?.ok) {
-        console.error('SignIn failed with status:', result?.status);
-        setError('Accesso non riuscito. Riprova.');
-      } else {
-        router.push('/');
-      }
     } catch (error) {
       console.error('Exception during sign-in:', error);
-      setError('Si è verificato un errore imprevisto durante l\'accesso.');
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
