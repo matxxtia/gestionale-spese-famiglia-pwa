@@ -59,12 +59,17 @@ export default function Dashboard() {
     fetchData()
   }, [session])
 
+  const [currentDate, setCurrentDate] = useState<Date | null>(null)
+  
+  useEffect(() => {
+    setCurrentDate(new Date())
+  }, [])
+  
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0)
-  const thisMonthExpenses = expenses.filter(expense => {
+  const thisMonthExpenses = currentDate ? expenses.filter(expense => {
     const expenseDate = new Date(expense.date)
-    const now = new Date()
-    return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear()
-  }).reduce((sum, expense) => sum + expense.amount, 0)
+    return expenseDate.getMonth() === currentDate.getMonth() && expenseDate.getFullYear() === currentDate.getFullYear()
+  }).reduce((sum, expense) => sum + expense.amount, 0) : 0
 
   const handleAddExpense = async (expenseData: any) => {
     try {
