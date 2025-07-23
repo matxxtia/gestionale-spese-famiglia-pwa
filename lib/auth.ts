@@ -15,8 +15,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        console.log('Authorize function called with credentials:', credentials?.username);
+
         if (!credentials?.username || !credentials?.password) {
-          return null
+          throw new Error('Please provide username and password.');
         }
 
         try {
@@ -30,22 +32,25 @@ export const authOptions: NextAuthOptions = {
                 }
               }
             }
-          })
-          
+          });
+
           if (!user || !user.password) {
-            return null
+            console.error('User not found or password not set for:', credentials.username);
+            throw new Error('Invalid credentials');
           }
 
           // Verifica la password
-          const isValidPassword = await bcrypt.compare(credentials.password, user.password)
-          
+          const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+
           if (!isValidPassword) {
-            return null
+            console.error('Invalid password for user:', credentials.username);
+            throw new Error('Invalid credentials');
           }
 
+          console.log('User authenticated successfully:', user.username);
           // Trova la famiglia attiva dell'utente
-          const activeFamilyMember = user.families.find(fm => fm.isActive)
-          
+          const activeFamilyMember = user.families.find(fm => fm.isActive);
+
           return {
             id: user.id,
             name: user.name,
@@ -55,10 +60,13 @@ export const authOptions: NextAuthOptions = {
             familyId: activeFamilyMember?.familyId,
             familyName: activeFamilyMember?.family.name,
             role: activeFamilyMember?.role
-          }
+          };
         } catch (error) {
-          console.error('Errore durante l\'autenticazione:', error)
-          return null
+          console.error('Authentication error:', error);
+          if (error instanceof Error) {
+            throw new Error(error.message || 'An authentication error occurred.');
+          }
+          throw new Error('An authentication error occurred.');
         }
       }
     })

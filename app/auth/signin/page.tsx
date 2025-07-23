@@ -38,7 +38,7 @@ export default function SignIn() {
 
       if (result?.error) {
         console.error('SignIn Error:', result.error);
-        setError('Nome utente o password non validi. Controlla la console per i dettagli.');
+        setError(result.error);
       } else if (!result?.ok) {
         console.error('SignIn failed with status:', result?.status);
         setError('Accesso non riuscito. Riprova.');
