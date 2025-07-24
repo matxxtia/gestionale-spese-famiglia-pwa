@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (dbError) {
-      console.log('Database error, falling back to test users:', dbError.message);
+      console.log('Database error, falling back to test users:', dbError instanceof Error ? dbError.message : String(dbError));
     }
     
     // If not found in database, try test users (fallback)
