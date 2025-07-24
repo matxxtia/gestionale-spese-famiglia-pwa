@@ -62,8 +62,7 @@ export async function POST(request: NextRequest) {
     const family = await prisma.family.create({
       data: {
         name,
-        description: description || '',
-        members: {
+                members: {
           create: {
             userId: session.user.id,
             name: session.user.name || session.user.username || 'Admin',
