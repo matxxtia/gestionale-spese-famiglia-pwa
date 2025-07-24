@@ -13,10 +13,18 @@ function AuthErrorContent() {
 
   const errorMessages: { [key: string]: string } = {
     CredentialsSignin: 'Invalid username or password. Please try again.',
+    AccessDenied: 'Access denied. Please contact the administrator.',
+    Configuration: 'Server configuration error. Please check server logs.',
+    Verification: 'The sign in link is no longer valid. Please sign in again.',
+    OAuthAccountNotLinked: 'Account not linked. Use the originally connected provider.',
+    OAuthCallback: 'OAuth callback failed. Please try again.',
+    OAuthCreateAccount: 'OAuth account creation failed. Please try again.',
+    EmailCreateAccount: 'Email account creation failed. Please try again.',
     default: 'An unexpected error occurred. Please try again.',
   }
 
-  const errorMessage = error && (errorMessages[error] || errorMessages.default)
+  const errorMessage =
+    error && (errorMessages[error] || `${errorMessages.default} (${error})`)
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

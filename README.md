@@ -253,7 +253,8 @@ gestionale-spese-famiglia/
 - **Login sicuro** con hashing bcrypt
 - **Sessioni JWT** gestite da NextAuth.js
 - **Protezione route** con middleware
-- **Gestione errori** auth centralizzata
+- **Gestione errori** auth centralizzata con pagina `/auth/error` che mostra
+  messaggi specifici per codici come `CredentialsSignin` o `AccessDenied`
 
 ### 👨‍👩‍👧‍👦 Gestione Famiglia
 - **Creazione famiglia** con nome personalizzato
