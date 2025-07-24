@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const { familyName, adminName, adminUsername, adminPassword } = await request.json();
+    const { familyName, adminName, adminUsername, adminPassword, adminEmail } = await request.json();
 
     // Validazione input
     if (!familyName || !adminName || !adminUsername || !adminPassword) {
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
         data: {
           name: adminName,
           username: adminUsername,
+          email: adminEmail || `${adminUsername}@famiglia.local`,
           password: hashedPassword,
         },
       });
@@ -66,6 +67,12 @@ export async function POST(request: NextRequest) {
           sharePercentage: 100.0,
           isActive: true,
         },
+      });
+
+      // Aggiorna l'utente con il familyId
+      await tx.user.update({
+        where: { id: adminUser.id },
+        data: { familyId: family.id },
       });
 
       // Crea categorie di default

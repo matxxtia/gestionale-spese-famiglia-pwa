@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
+import MotionWrapper, { AnimatePresenceWrapper } from './MotionWrapper'
+import ClientOnly from './ClientOnly'
 import { 
   ShoppingCart, 
   Zap, 
@@ -66,12 +67,15 @@ export default function ExpenseList({ expenses, family, onDeleteExpense, onEditE
   }
 
   const handleDeleteExpense = (expenseId: string) => {
-    if (window.confirm(t('expenses.deleteExpense') + '?')) {
+    if (typeof window !== 'undefined' && window.confirm(t('expenses.deleteExpense') + '?')) {
       onDeleteExpense?.(expenseId)
     }
   }
 
   const formatCurrency = (amount: number) => {
+    if (typeof window === 'undefined') {
+      return `€${amount.toFixed(2)}`
+    }
     return new Intl.NumberFormat('it-IT', {
       style: 'currency',
       currency: 'EUR'
@@ -80,6 +84,9 @@ export default function ExpenseList({ expenses, family, onDeleteExpense, onEditE
 
   const formatDate = (date: string | Date) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date
+    if (typeof window === 'undefined') {
+      return dateObj.toISOString().split('T')[0]
+    }
     return dateObj.toLocaleDateString('it-IT')
   }
 
@@ -132,14 +139,15 @@ export default function ExpenseList({ expenses, family, onDeleteExpense, onEditE
 
       {/* Expenses List */}
       <div className="space-y-4">
-        <AnimatePresence>
-          {filteredExpenses.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="card text-center py-12"
-            >
+        <ClientOnly>
+          <AnimatePresenceWrapper>
+            {filteredExpenses.length === 0 ? (
+              <MotionWrapper
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="card text-center py-12"
+              >
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ShoppingCart className="w-8 h-8 text-gray-400" />
               </div>
@@ -151,22 +159,22 @@ export default function ExpenseList({ expenses, family, onDeleteExpense, onEditE
                   ? t('expenses.tryAdjustingFilters')
                   : t('expenses.startByAdding')}
               </p>
-            </motion.div>
-          ) : (
-            filteredExpenses.map((expense, index) => {
-              const category = getCategory(expense.categoryId)
-              const member = getMember(expense.paidById)
-              const IconComponent = category ? getCategoryIcon(category.icon) : ShoppingCart
+              </MotionWrapper>
+            ) : (
+              filteredExpenses.map((expense, index) => {
+                const category = getCategory(expense.categoryId)
+                const member = getMember(expense.paidById)
+                const IconComponent = category ? getCategoryIcon(category.icon) : ShoppingCart
 
-              return (
-                <motion.div
-                  key={expense.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="expense-item"
-                >
+                return (
+                  <MotionWrapper
+                    key={expense.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="expense-item"
+                  >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       {/* Category Icon */}
@@ -238,20 +246,22 @@ export default function ExpenseList({ expenses, family, onDeleteExpense, onEditE
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              )
-            })
-          )}
-        </AnimatePresence>
+                  </MotionWrapper>
+                )
+              })
+            )}
+          </AnimatePresenceWrapper>
+        </ClientOnly>
       </div>
 
       {/* Summary */}
       {filteredExpenses.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card bg-primary-50 border-primary-200"
-        >
+        <ClientOnly>
+          <MotionWrapper
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="card bg-primary-50 border-primary-200"
+          >
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-primary-700">
@@ -265,7 +275,8 @@ export default function ExpenseList({ expenses, family, onDeleteExpense, onEditE
               <p>{t('expenses.average')}: {formatCurrency(filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0) / filteredExpenses.length)}</p>
             </div>
           </div>
-        </motion.div>
+          </MotionWrapper>
+        </ClientOnly>
       )}
     </div>
   )

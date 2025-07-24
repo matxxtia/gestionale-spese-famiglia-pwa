@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-07-24T10:32:32.670Z",
+  "status": 405,
+  "statusText": "Method Not Allowed",
+  "headers": {
+    "age": "78861",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-disposition": "inline",
+    "content-length": "0",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Thu, 24 Jul 2025 10:32:31 GMT",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-matched-path": "/",
+    "x-vercel-cache": "HIT",
+    "x-vercel-id": "iad1::jmg2f-1753353151980-bc545e6feb75"
+  },
+  "body": "",
+  "cookies": {}
+}

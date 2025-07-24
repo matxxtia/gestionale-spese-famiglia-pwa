@@ -33,6 +33,7 @@ CREATE TABLE "User" (
     "image" TEXT,
     "username" TEXT,
     "password" TEXT,
+    "familyId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );

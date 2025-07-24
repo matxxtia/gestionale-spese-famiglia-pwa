@@ -2,8 +2,12 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Suspense } from 'react'
 
-export default function AuthError() {
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
+function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
 
@@ -28,5 +32,13 @@ export default function AuthError() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function AuthError() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <AuthErrorContent />
+    </Suspense>
   )
 }

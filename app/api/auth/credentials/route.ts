@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-// Simple in-memory user store for testing
+// Simple in-memory user store for testing (fallback)
 const testUsers = [
   {
     id: '1',
@@ -24,19 +24,62 @@ const testUsers = [
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const { email, password, username } = await request.json()
 
-    if (!email || !password) {
+    if ((!email && !username) || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Email/username and password are required' },
         { status: 400 }
       )
     }
 
-    // Find user in test data
-    const user = testUsers.find(u => u.email === email)
+    let user = null;
     
-    if (!user) {
+    try {
+      // First try to find user in database by email or username
+      if (email) {
+        user = await prisma.user.findUnique({
+          where: { email },
+          include: {
+            families: {
+              include: {
+                family: true
+              }
+            }
+          }
+        });
+      } else if (username) {
+        user = await prisma.user.findUnique({
+          where: { username },
+          include: {
+            families: {
+              include: {
+                family: true
+              }
+            }
+          }
+        });
+      }
+    } catch (dbError) {
+      console.log('Database error, falling back to test users:', dbError.message);
+    }
+    
+    // If not found in database, try test users (fallback)
+    if (!user && email) {
+      const testUser = testUsers.find(u => u.email === email);
+      if (testUser) {
+        const isValidPassword = await bcrypt.compare(password, testUser.password);
+        if (isValidPassword) {
+          const { password: _, ...userWithoutPassword } = testUser;
+          return NextResponse.json({
+            user: userWithoutPassword,
+            message: 'Authentication successful'
+          });
+        }
+      }
+    }
+    
+    if (!user || !user.password) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -53,11 +96,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Find active family
+    const activeFamilyMember = user.families.find(fm => fm.isActive);
+    
     // Return user data (excluding password)
-    const { password: _, ...userWithoutPassword } = user
+    const { password: _, ...userWithoutPassword } = user;
     
     return NextResponse.json({
-      user: userWithoutPassword,
+      user: {
+        ...userWithoutPassword,
+        familyId: activeFamilyMember?.familyId,
+        familyName: activeFamilyMember?.family.name,
+        role: activeFamilyMember?.role
+      },
       message: 'Authentication successful'
     })
     

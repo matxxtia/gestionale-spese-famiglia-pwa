@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
-import { Plus, Users, Settings, LogOut, TrendingUp, Calendar, Tag, Scale } from 'lucide-react'
+import { Plus, Users, Settings, LogOut, TrendingUp, Calendar, Tag, Scale, Repeat } from 'lucide-react'
 import Header from './Header'
 import ExpenseList from './ExpenseList'
 import AddExpenseModal from './AddExpenseModal'
+import RecurringExpenseModal from './RecurringExpenseModal'
 import FamilySettings from './FamilySettings'
 import CategoryManager from './CategoryManager'
 import BalanceManager from './BalanceManager'
@@ -19,6 +20,7 @@ export default function Dashboard() {
   const [family, setFamily] = useState<Family | null>(null)
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false)
+  const [showRecurringModal, setShowRecurringModal] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [activeTab, setActiveTab] = useState<'expenses' | 'categories' | 'balances' | 'family' | 'members'>('expenses')
   const [isLoading, setIsLoading] = useState(true)
@@ -70,6 +72,56 @@ export default function Dashboard() {
     const expenseDate = new Date(expense.date)
     return expenseDate.getMonth() === currentDate.getMonth() && expenseDate.getFullYear() === currentDate.getFullYear()
   }).reduce((sum, expense) => sum + expense.amount, 0) : 0
+
+  // Calculate member balances for quick overview
+  const calculateQuickBalances = () => {
+    if (!family?.members) return []
+    
+    const balances: { [memberId: string]: { name: string, totalPaid: number, shouldPay: number, balance: number } } = {}
+    
+    // Initialize balances
+    family.members.forEach(member => {
+      balances[member.id] = {
+        name: member.name,
+        totalPaid: 0,
+        shouldPay: 0,
+        balance: 0
+      }
+    })
+    
+    // Calculate total paid by each member
+    expenses.forEach(expense => {
+      if (balances[expense.paidById]) {
+        balances[expense.paidById].totalPaid += expense.amount
+      }
+    })
+    
+    // Calculate what each member should pay
+    expenses.forEach(expense => {
+      if (expense.customSplit) {
+        Object.entries(expense.customSplit).forEach(([memberId, percentage]) => {
+          if (balances[memberId]) {
+            balances[memberId].shouldPay += (expense.amount * percentage) / 100
+          }
+        })
+      } else {
+        family.members.forEach(member => {
+          if (balances[member.id]) {
+            balances[member.id].shouldPay += (expense.amount * member.sharePercentage) / 100
+          }
+        })
+      }
+    })
+    
+    // Calculate final balance
+    Object.values(balances).forEach(balance => {
+      balance.balance = balance.totalPaid - balance.shouldPay
+    })
+    
+    return Object.values(balances).sort((a, b) => Math.abs(b.balance) - Math.abs(a.balance))
+  }
+  
+  const quickBalances = calculateQuickBalances()
 
   const handleAddExpense = async (expenseData: any) => {
     try {
@@ -198,7 +250,7 @@ export default function Dashboard() {
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -207,8 +259,8 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-gray-900">${thisMonthExpenses.toFixed(2)}</p>
+                <p className="text-sm font-medium text-gray-600">Questo Mese</p>
+                <p className="text-2xl font-bold text-gray-900">€{thisMonthExpenses.toFixed(2)}</p>
               </div>
               <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-primary-600" />
@@ -224,8 +276,8 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Expenses</p>
-                <p className="text-2xl font-bold text-gray-900">${totalExpenses.toFixed(2)}</p>
+                <p className="text-sm font-medium text-gray-600">Spese Totali</p>
+                <p className="text-2xl font-bold text-gray-900">€{totalExpenses.toFixed(2)}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-green-600" />
@@ -241,7 +293,7 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Family Members</p>
+                <p className="text-sm font-medium text-gray-600">Membri Famiglia</p>
                 <p className="text-2xl font-bold text-gray-900">{family?.members.length || 0}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
@@ -249,7 +301,77 @@ export default function Dashboard() {
               </div>
             </div>
           </motion.div>
+
+          {/* Balance Summary Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="card cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setActiveTab('balances')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Bilancio</p>
+                <p className="text-lg font-bold text-blue-600">Visualizza</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <Scale className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Quick Balance Overview */}
+        {quickBalances.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Bilancio Rapido</h3>
+              <button
+                onClick={() => setActiveTab('balances')}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Visualizza Dettagli →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {quickBalances.slice(0, 3).map((member, index) => {
+                const getBalanceColor = (balance: number) => {
+                  if (balance > 0.01) return 'text-green-600 bg-green-50 border-green-200'
+                  if (balance < -0.01) return 'text-red-600 bg-red-50 border-red-200'
+                  return 'text-gray-600 bg-gray-50 border-gray-200'
+                }
+                
+                const getBalanceText = (balance: number) => {
+                  if (balance > 0.01) return 'Gli è dovuto'
+                  if (balance < -0.01) return 'Deve'
+                  return 'In pari'
+                }
+                
+                return (
+                  <div key={index} className={`p-4 rounded-lg border ${getBalanceColor(member.balance)}`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">{member.name}</h4>
+                        <p className="text-sm text-gray-600">{getBalanceText(member.balance)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-semibold ${getBalanceColor(member.balance).split(' ')[0]}`}>
+                          €{Math.abs(member.balance).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
 
         {/* Navigation Tabs */}
         <div className="flex space-x-1 bg-gray-200 p-1 rounded-lg mb-6 w-fit">
@@ -312,15 +434,26 @@ export default function Dashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Recent Expenses</h2>
-              <motion.button
-                   whileHover={{ scale: 1.02 }}
-                   whileTap={{ scale: 0.98 }}
-                   onClick={() => setIsAddExpenseModalOpen(true)}
-                   className="btn-primary flex items-center gap-2"
-                 >
-                   <Plus className="w-4 h-4" />
-                   {t('expenses.addExpense')}
-                 </motion.button>
+              <div className="flex gap-3">
+                <motion.button
+                     whileHover={{ scale: 1.02 }}
+                     whileTap={{ scale: 0.98 }}
+                     onClick={() => setIsAddExpenseModalOpen(true)}
+                     className="btn-primary flex items-center gap-2"
+                   >
+                     <Plus className="w-4 h-4" />
+                     {t('expenses.addExpense')}
+                   </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowRecurringModal(true)}
+                  className="btn-secondary flex items-center gap-2"
+                >
+                  <Repeat className="w-4 h-4" />
+                  Spesa Ricorrente
+                </motion.button>
+              </div>
             </div>
             <ExpenseList 
                expenses={expenses} 
@@ -358,6 +491,15 @@ export default function Dashboard() {
              setIsAddExpenseModalOpen(false)
              setEditingExpense(null)
            }}
+         />
+       )}
+       
+       {/* Recurring Expense Modal */}
+       {showRecurringModal && family && (
+         <RecurringExpenseModal
+           family={family}
+           onAdd={handleAddExpense}
+           onClose={() => setShowRecurringModal(false)}
          />
        )}
     </div>

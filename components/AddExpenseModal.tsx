@@ -6,6 +6,7 @@ import { X, DollarSign, Calendar, MapPin, Tag, User, Users } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useSession } from 'next-auth/react'
 import { Family, Expense } from '@/types'
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -28,12 +29,20 @@ const formSchema = z.object({
 type ExpenseFormData = z.infer<typeof formSchema>
 
 export default function AddExpenseModal({ family, onAdd, onClose, editingExpense }: AddExpenseModalProps) {
+  const { data: session } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [useCustomSplit, setUseCustomSplit] = useState(!!editingExpense?.customSplit)
   const [customSplit, setCustomSplit] = useState<{ [memberId: string]: number }>(
     editingExpense?.customSplit || {}
   )
   const { t } = useTranslation()
+  
+  // Find current user's family member ID
+  const getCurrentUserMemberId = () => {
+    if (!session?.user?.id || !family?.members) return family?.members[0]?.id || ''
+    const currentMember = family.members.find(member => member.userId === session.user.id)
+    return currentMember?.id || family.members[0]?.id || ''
+  }
 
   // Helper function to format date
   const formatDate = (date: Date | string): string => {
@@ -60,7 +69,7 @@ export default function AddExpenseModal({ family, onAdd, onClose, editingExpense
       amount: '',
       date: new Date().toISOString().split('T')[0],
       categoryId: '',
-      paidById: family.members[0]?.id || '',
+      paidById: getCurrentUserMemberId(),
       location: '',
     },
   })

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Suite API - Gestionale Spese Famiglia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            padding: 30px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #374151;
+            min-width: 120px;
+        }
+        
+        .control-group input, .control-group select {
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .test-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .test-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .test-card.success {
+            border-color: #10b981;
+        }
+        
+        .test-card.error {
+            border-color: #ef4444;
+        }
+        
+        .test-card.loading {
+            border-color: #f59e0b;
+        }
+        
+        .test-header {
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-title {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .test-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-running {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .test-body {
+            padding: 20px;
+        }
+        
+        .test-details {
+            margin-bottom: 15px;
+        }
+        
+        .test-details strong {
+            color: #374151;
+        }
+        
+        .test-response {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8fafc;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .success-number { color: #10b981; }
+        .error-number { color: #ef4444; }
+        .pending-number { color: #f59e0b; }
+        .total-number { color: #3b82f6; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .log-container {
+            padding: 30px;
+            background: #1f2937;
+            color: #f9fafb;
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .log-content {
+            background: #111827;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group label {
+                min-width: auto;
+            }
+            
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Suite API</h1>
+            <p>Sistema di test automatizzato per Gestionale Spese Famiglia</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="baseUrl">🌐 Base URL:</label>
+                <input type="text" id="baseUrl" value="http://localhost:3000" style="flex: 1;">
+                <select id="environment">
+                    <option value="local">🏠 Locale</option>
+                    <option value="vercel">☁️ Vercel</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="testUser">👤 Test User:</label>
+                <input type="text" id="testUser" value="test@famiglia.com" placeholder="Email test">
+                <input type="password" id="testPassword" value="password123" placeholder="Password test">
+            </div>
+            
+            <div class="control-group">
+                <button class="btn btn-primary" onclick="runAllTests()">🚀 Esegui Tutti i Test</button>
+                <button class="btn btn-success" onclick="runAuthTests()">🔐 Test Autenticazione</button>
+                <button class="btn btn-warning" onclick="runApiTests()">🌐 Test API</button>
+                <button class="btn btn-danger" onclick="clearResults()">🗑️ Pulisci</button>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number total-number" id="totalTests">0</div>
+                <div class="stat-label">Test Totali</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number success-number" id="successTests">0</div>
+                <div class="stat-label">Successi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number error-number" id="errorTests">0</div>
+                <div class="stat-label">Errori</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number pending-number" id="pendingTests">0</div>
+                <div class="stat-label">In Attesa</div>
+            </div>
+        </div>
+        
+        <div class="test-grid" id="testGrid">
+            <!-- Test cards will be generated here -->
+        </div>
+        
+        <div class="log-container">
+            <div class="log-header">
+                <h3>📋 Log Dettagliato</h3>
+                <button class="btn btn-primary" onclick="clearLogs()">Pulisci Log</button>
+            </div>
+            <div class="log-content" id="logContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Configurazione test
+        let baseUrl = 'http://localhost:3000';
+        let authToken = null;
+        let testResults = {};
+        let currentTestIndex = 0;
+        let totalTestsCount = 0;
+        
+        // Test definitions
+        const testSuites = {
+            auth: [
+                {
+                    name: '🔐 Registrazione Utente',
+                    method: 'POST',
+                    endpoint: '/api/auth/register',
+                    data: () => ({
+                        email: document.getElementById('testUser').value,
+                        username: 'testuser',
+                        password: document.getElementById('testPassword').value,
+                        name: 'Test User'
+                    }),
+                    expectedStatus: [200, 201, 409]
+                },
+                {
+                    name: '🔑 Login Utente',
+                    method: 'POST',
+                    endpoint: '/api/auth/signin',
+                    data: () => ({
+                        email: document.getElementById('testUser').value,
+                        password: document.getElementById('testPassword').value
+                    }),
+                    expectedStatus: [200],
+                    onSuccess: (response) => {
+                        if (response.token) {
+                            authToken = response.token;
+                            log('✅ Token di autenticazione salvato');
+                        }
+                    }
+                },
+                {
+                    name: '👤 Verifica Sessione',
+                    method: 'GET',
+                    endpoint: '/api/auth/session',
+                    requiresAuth: true,
+                    expectedStatus: [200]
+                },
+                {
+                    name: '🚪 Logout Utente',
+                    method: 'POST',
+                    endpoint: '/api/auth/signout',
+                    requiresAuth: true,
+                    expectedStatus: [200]
+                }
+            ],
+            api: [
+                {
+                    name: '👨‍👩‍👧‍👦 Crea Famiglia',
+                    method: 'POST',
+                    endpoint: '/api/family',
+                    requiresAuth: true,
+                    data: () => ({
+                        name: 'Famiglia Test ' + Date.now()
+                    }),
+                    expectedStatus: [200, 201]
+                },
+                {
+                    name: '📋 Lista Categorie',
+                    method: 'GET',
+                    endpoint: '/api/categories',
+                    requiresAuth: true,
+                    expectedStatus: [200]
+                },
+                {
+                    name: '🏷️ Crea Categoria',
+                    method: 'POST',
+                    endpoint: '/api/categories',
+                    requiresAuth: true,
+                    data: () => ({
+                        name: 'Test Category',
+                        icon: '🛒',
+                        color: '#3b82f6'
+                    }),
+                    expectedStatus: [200, 201]
+                },
+                {
+                    name: '💰 Lista Spese',
+                    method: 'GET',
+                    endpoint: '/api/expenses',
+                    requiresAuth: true,
+                    expectedStatus: [200]
+                },
+                {
+                    name: '➕ Crea Spesa',
+                    method: 'POST',
+                    endpoint: '/api/expenses',
+                    requiresAuth: true,
+                    data: () => ({
+                        amount: 25.50,
+                        description: 'Spesa di test',
+                        date: new Date().toISOString(),
+                        categoryId: 'test-category-id'
+                    }),
+                    expectedStatus: [200, 201, 400] // 400 se categoryId non esiste
+                }
+            ]
+        };
+        
+        // Utility functions
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logContent = document.getElementById('logContent');
+            logContent.textContent += `[${timestamp}] ${message}\n`;
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logContent').textContent = '';
+        }
+        
+        function updateStats() {
+            const results = Object.values(testResults);
+            const total = results.length;
+            const success = results.filter(r => r.status === 'success').length;
+            const error = results.filter(r => r.status === 'error').length;
+            const pending = results.filter(r => r.status === 'pending').length;
+            
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('successTests').textContent = success;
+            document.getElementById('errorTests').textContent = error;
+            document.getElementById('pendingTests').textContent = pending;
+            
+            const progress = total > 0 ? ((success + error) / total) * 100 : 0;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        
+        function createTestCard(testId, test) {
+            return `
+                <div class="test-card" id="card-${testId}">
+                    <div class="test-header">
+                        <div class="test-title">${test.name}</div>
+                        <div class="test-status status-pending" id="status-${testId}">In Attesa</div>
+                    </div>
+                    <div class="test-body">
+                        <div class="test-details">
+                            <strong>Metodo:</strong> ${test.method}<br>
+                            <strong>Endpoint:</strong> ${test.endpoint}<br>
+                            <strong>Auth:</strong> ${test.requiresAuth ? '🔒 Richiesta' : '🔓 Non richiesta'}
+                        </div>
+                        <div class="test-response" id="response-${testId}">In attesa di esecuzione...</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateTestCard(testId, status, response, duration) {
+            const card = document.getElementById(`card-${testId}`);
+            const statusEl = document.getElementById(`status-${testId}`);
+            const responseEl = document.getElementById(`response-${testId}`);
+            
+            // Update card class
+            card.className = `test-card ${status}`;
+            
+            // Update status
+            statusEl.className = `test-status status-${status}`;
+            statusEl.textContent = status === 'success' ? 'Successo' : 
+                                 status === 'error' ? 'Errore' : 
+                                 status === 'loading' ? 'In Corso' : 'In Attesa';
+            
+            // Update response
+            const responseText = typeof response === 'object' ? 
+                JSON.stringify(response, null, 2) : response;
+            responseEl.textContent = `${responseText}${duration ? `\n\n⏱️ Durata: ${duration}ms` : ''}`;
+        }
+        
+        async function executeTest(testId, test) {
+            const startTime = Date.now();
+            
+            try {
+                log(`🚀 Eseguendo test: ${test.name}`);
+                updateTestCard(testId, 'loading', 'Esecuzione in corso...', null);
+                
+                const url = baseUrl + test.endpoint;
+                const options = {
+                    method: test.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                // Add auth header if required
+                if (test.requiresAuth && authToken) {
+                    options.headers['Authorization'] = `Bearer ${authToken}`;
+                }
+                
+                // Add body data if present
+                if (test.data && (test.method === 'POST' || test.method === 'PUT')) {
+                    options.body = JSON.stringify(test.data());
+                }
+                
+                const response = await fetch(url, options);
+                const duration = Date.now() - startTime;
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch {
+                    responseData = await response.text();
+                }
+                
+                const isSuccess = test.expectedStatus.includes(response.status);
+                
+                if (isSuccess) {
+                    testResults[testId] = { status: 'success', response: responseData, duration };
+                    updateTestCard(testId, 'success', {
+                        status: response.status,
+                        data: responseData
+                    }, duration);
+                    
+                    // Execute onSuccess callback if present
+                    if (test.onSuccess) {
+                        test.onSuccess(responseData);
+                    }
+                    
+                    log(`✅ ${test.name} - Successo (${response.status})`);
+                } else {
+                    throw new Error(`Status code ${response.status} non previsto. Attesi: ${test.expectedStatus.join(', ')}`);
+                }
+                
+            } catch (error) {
+                const duration = Date.now() - startTime;
+                testResults[testId] = { status: 'error', error: error.message, duration };
+                updateTestCard(testId, 'error', `❌ Errore: ${error.message}`, duration);
+                log(`❌ ${test.name} - Errore: ${error.message}`);
+            }
+            
+            updateStats();
+        }
+        
+        async function runTestSuite(suiteName, tests) {
+            log(`📦 Avvio suite: ${suiteName}`);
+            
+            for (const test of tests) {
+                const testId = `${suiteName}-${currentTestIndex++}`;
+                testResults[testId] = { status: 'pending' };
+                
+                // Create test card
+                const testGrid = document.getElementById('testGrid');
+                testGrid.innerHTML += createTestCard(testId, test);
+                
+                updateStats();
+                
+                // Execute test
+                await executeTest(testId, test);
+                
+                // Small delay between tests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            log('🎯 Avvio test completi...');
+            
+            // Update base URL
+            baseUrl = document.getElementById('baseUrl').value;
+            
+            // Run auth tests first
+            await runTestSuite('auth', testSuites.auth);
+            
+            // Then run API tests
+            await runTestSuite('api', testSuites.api);
+            
+            log('🏁 Test completati!');
+        }
+        
+        async function runAuthTests() {
+            clearResults();
+            baseUrl = document.getElementById('baseUrl').value;
+            await runTestSuite('auth', testSuites.auth);
+        }
+        
+        async function runApiTests() {
+            clearResults();
+            baseUrl = document.getElementById('baseUrl').value;
+            await runTestSuite('api', testSuites.api);
+        }
+        
+        function clearResults() {
+            testResults = {};
+            currentTestIndex = 0;
+            document.getElementById('testGrid').innerHTML = '';
+            updateStats();
+            log('🗑️ Risultati puliti');
+        }
+        
+        // Environment switcher
+        document.getElementById('environment').addEventListener('change', function() {
+            const env = this.value;
+            const baseUrlInput = document.getElementById('baseUrl');
+            
+            if (env === 'local') {
+                baseUrlInput.value = 'http://localhost:3000';
+            } else if (env === 'vercel') {
+                baseUrlInput.value = 'https://gestionale-spese-famiglia-pwa.vercel.app';
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Test Suite inizializzata');
+            log('💡 Seleziona un ambiente e clicca su "Esegui Tutti i Test" per iniziare');
+        });
+    </script>
+</body>
+</html>

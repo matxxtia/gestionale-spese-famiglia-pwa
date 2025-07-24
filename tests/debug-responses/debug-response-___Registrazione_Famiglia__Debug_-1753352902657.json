@@ -1,0 +1,25 @@
+{
+  "testName": "🔐 Registrazione Famiglia (Debug)",
+  "timestamp": "2025-07-24T10:28:22.658Z",
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "application/json",
+      "date": "Thu, 24 Jul 2025 10:28:21 GMT",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url",
+      "x-matched-path": "/api/auth/register",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "iad1::iad1::q67lb-1753352901157-76d5998b0f33",
+      "transfer-encoding": "chunked"
+    },
+    "data": {
+      "message": "Gruppo famiglia creato con successo",
+      "familyId": "cmdh91pmk00026tlp71z05n5r",
+      "userId": "cmdh91pm000016tlp2fth3ex5"
+    },
+    "rawData": "{\"message\":\"Gruppo famiglia creato con successo\",\"familyId\":\"cmdh91pmk00026tlp71z05n5r\",\"userId\":\"cmdh91pm000016tlp2fth3ex5\"}"
+  }
+}

@@ -1,12 +1,11 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { NextAuthOptions } from 'next-auth'
-
-const prisma = new PrismaClient()
+import { prisma } from './prisma'
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development',
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -18,13 +17,18 @@ export const authOptions: NextAuthOptions = {
         console.log('Authorize function called with credentials:', credentials?.username);
 
         if (!credentials?.username || !credentials?.password) {
-          throw new Error('Please provide username and password.');
+          throw new Error('MISSING_CREDENTIALS');
         }
 
         try {
-          // Cerca l'utente nel database
-          const user = await prisma.user.findUnique({
-            where: { username: credentials.username },
+          // Cerca l'utente nel database per username o email
+          const user = await prisma.user.findFirst({
+            where: {
+              OR: [
+                { username: credentials.username },
+                { email: credentials.username }
+              ]
+            },
             include: {
               families: {
                 include: {
@@ -36,7 +40,7 @@ export const authOptions: NextAuthOptions = {
 
           if (!user || !user.password) {
             console.error('User not found or password not set for:', credentials.username);
-            throw new Error('Invalid credentials');
+            throw new Error('INVALID_CREDENTIALS');
           }
 
           // Verifica la password
@@ -44,7 +48,7 @@ export const authOptions: NextAuthOptions = {
 
           if (!isValidPassword) {
             console.error('Invalid password for user:', credentials.username);
-            throw new Error('Invalid credentials');
+            throw new Error('INVALID_CREDENTIALS');
           }
 
           console.log('User authenticated successfully:', user.username);
@@ -64,9 +68,11 @@ export const authOptions: NextAuthOptions = {
         } catch (error) {
           console.error('Authentication error:', error);
           if (error instanceof Error) {
-            throw new Error(error.message || 'An authentication error occurred.');
+            // Sanitizza il messaggio di errore per evitare caratteri non validi negli header HTTP
+            const sanitizedMessage = error.message.replace(/[\r\n\t]/g, ' ').trim();
+            throw new Error(sanitizedMessage || 'AUTH_ERROR');
           }
-          throw new Error('An authentication error occurred.');
+          throw new Error('AUTH_ERROR');
         }
       }
     })

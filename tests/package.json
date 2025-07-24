@@ -1,0 +1,83 @@
+{
+  "name": "famiglia-pwa-tests",
+  "version": "1.0.0",
+  "description": "Test suite intensiva per PWA Gestionale Spese Famiglia",
+  "main": "automated-test.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:local": "cross-env TEST_BASE_URL=http://localhost:3000 jest",
+    "test:vercel": "cross-env TEST_BASE_URL=https://your-app.vercel.app jest",
+    "test:api": "jest --testNamePattern='Test API'",
+    "test:auth": "jest --testNamePattern='Test Autenticazione'",
+    "test:pwa": "jest --testNamePattern='Test PWA'",
+    "test:security": "jest --testNamePattern='Test Sicurezza'",
+    "test:performance": "jest --testNamePattern='Test Performance'",
+    "test:e2e": "jest --testNamePattern='Test End-to-End'",
+    "test:automated": "node automated-test.js",
+    "test:automated:local": "node automated-test.js --env=local",
+    "test:automated:vercel": "node automated-test.js --env=vercel",
+    "test:html": "node -e \"require('http').createServer((req,res)=>{if(req.url==='/'){res.writeHead(200,{'Content-Type':'text/html'});require('fs').createReadStream('./api-test.html').pipe(res)}else{res.writeHead(404);res.end()}}).listen(8080,()=>console.log('Test interface: http://localhost:8080'))\"",
+    "start:test-server": "npm run test:html",
+    "lint:tests": "eslint *.js",
+    "validate:config": "node -e \"console.log('✅ Configurazione valida:', JSON.stringify(require('./automated-test').CONFIG, null, 2))\""
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 30000,
+    "verbose": true,
+    "collectCoverage": false,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testMatch": [
+      "**/*.test.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporters",
+        {
+          "publicPath": "./test-reports",
+          "filename": "jest-report.html",
+          "expand": true,
+          "hideIcon": false,
+          "pageTitle": "PWA Test Results"
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "chalk": "^4.1.2",
+    "commander": "^9.4.1",
+    "cross-env": "^7.0.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-html-reporters": "^3.1.5",
+    "eslint": "^8.57.0",
+    "@types/jest": "^29.5.5"
+  },
+  "keywords": [
+    "pwa",
+    "testing",
+    "api",
+    "authentication",
+    "jest",
+    "automation"
+  ],
+  "author": "Famiglia PWA Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

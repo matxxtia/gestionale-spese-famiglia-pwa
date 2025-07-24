@@ -1,8 +1,9 @@
 'use client'
 
 import { useSession, signOut } from 'next-auth/react'
-import { motion } from 'framer-motion'
 import { LogOut, User, DollarSign } from 'lucide-react'
+import MotionWrapper from './MotionWrapper'
+import ClientOnly from './ClientOnly'
 import Image from 'next/image'
 
 export default function Header() {
@@ -17,26 +18,29 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3"
-          >
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Family Expense Manager
-            </h1>
-          </motion.div>
+          <ClientOnly fallback={<div className="flex items-center gap-3"></div>}>
+            <MotionWrapper
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3"
+            >
+              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">
+                Family Expense Manager
+              </h1>
+            </MotionWrapper>
+          </ClientOnly>
 
           {/* User Menu */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-4"
-          >
-            {session?.user && (
+          <ClientOnly fallback={<div className="flex items-center gap-4"></div>}>
+            <MotionWrapper
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4"
+            >
+              {session?.user && (
               <>
                 <div className="flex items-center gap-3">
                   {session.user.image ? (
@@ -62,18 +66,19 @@ export default function Header() {
                   </div>
                 </div>
                 
-                <motion.button
+                <MotionWrapper
+                  type="button"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSignOut}
                   className="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                  title="Sign out"
                 >
                   <LogOut className="w-5 h-5" />
-                </motion.button>
+                </MotionWrapper>
               </>
             )}
-          </motion.div>
+            </MotionWrapper>
+          </ClientOnly>
         </div>
       </div>
     </header>

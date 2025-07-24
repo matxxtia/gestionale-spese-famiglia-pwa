@@ -1,0 +1,23 @@
+{
+  "testName": "🔑 Test Credenziali (Debug)",
+  "timestamp": "2025-07-24T10:28:38.200Z",
+  "response": {
+    "status": 401,
+    "headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "application/json",
+      "date": "Thu, 24 Jul 2025 10:28:37 GMT",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url",
+      "x-matched-path": "/api/auth/credentials",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "iad1::iad1::7xgkn-1753352917455-cae65c9b0426",
+      "transfer-encoding": "chunked"
+    },
+    "data": {
+      "error": "Invalid credentials"
+    },
+    "rawData": "{\"error\":\"Invalid credentials\"}"
+  }
+}
