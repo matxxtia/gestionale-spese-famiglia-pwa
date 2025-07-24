@@ -15,23 +15,20 @@ export async function POST(request: NextRequest) {
         // Questo endpoint può essere usato per logout personalizzato
         
         // Restituisci successo per il logout
-        return NextResponse.json(
+        const response = NextResponse.json(
             { 
                 message: "Logout effettuato con successo",
                 success: true 
             },
-            { 
-                status: 200,
-                headers: {
-                    // Pulisci i cookie di sessione
-                    'Set-Cookie': [
-                        'next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=lax',
-                        'next-auth.csrf-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=lax',
-                        '__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=lax'
-                    ]
-                }
-            }
+            { status: 200 }
         );
+        
+        // Pulisci i cookie di sessione
+        response.headers.set('Set-Cookie', 'next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=lax');
+        response.headers.append('Set-Cookie', 'next-auth.csrf-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=lax');
+        response.headers.append('Set-Cookie', '__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=lax');
+        
+        return response;
         
     } catch (error) {
         console.error('Errore in POST /api/auth/signout:', error);
