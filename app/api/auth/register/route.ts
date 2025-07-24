@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Errore durante la registrazione:', error);
     return NextResponse.json(
-      { error: 'Errore interno del server' },
+      { error: error instanceof Error ? error.message : 'Errore interno del server' },
       { status: 500 }
     );
   } finally {
