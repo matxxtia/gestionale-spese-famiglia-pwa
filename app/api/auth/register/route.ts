@@ -35,6 +35,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calcola l'email da usare
+    const userEmail = adminEmail || `${adminUsername}@famiglia.local`;
+
+    // Verifica se email già esiste
+    const existingEmail = await prisma.user.findUnique({
+      where: { email: userEmail }
+    });
+
+    if (existingEmail) {
+      return NextResponse.json(
+        { error: 'Email già in uso' },
+        { status: 400 }
+      );
+    }
+
     // Hash della password
     const hashedPassword = await bcrypt.hash(adminPassword, 12);
 
@@ -45,7 +60,7 @@ export async function POST(request: NextRequest) {
         data: {
           name: adminName,
           username: adminUsername,
-          email: adminEmail || `${adminUsername}@famiglia.local`,
+          email: userEmail,
           password: hashedPassword,
         },
       });
