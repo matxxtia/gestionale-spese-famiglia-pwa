@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { authOptions } from '../../../../../../lib/auth';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
 
 // DELETE - Elimina membro dalla famiglia
 export async function DELETE(
@@ -101,7 +100,7 @@ export async function DELETE(
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // Prisma handled via global instance
   }
 }
 
@@ -205,6 +204,6 @@ export async function PUT(
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // Prisma handled via global instance
   }
 }

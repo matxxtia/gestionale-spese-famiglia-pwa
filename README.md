@@ -77,7 +77,7 @@
 ├─────────────────────────────────────────────────────────────┤
 │                   DATABASE LAYER                           │
 ├─────────────────────────────────────────────────────────────┤
-│ Prisma ORM + SQLite (dev) / PostgreSQL (prod)             │
+│ Prisma ORM + PostgreSQL                                   │
 ├─────────────────────────────────────────────────────────────┤
 │                     PWA LAYER                              │
 ├─────────────────────────────────────────────────────────────┤
@@ -158,8 +158,7 @@ erDiagram
 ### Database e ORM
 - **Prisma 5.7.1** - ORM type-safe
 - **@prisma/client** - Client database generato
-- **SQLite** - Database di sviluppo
-- **PostgreSQL** - Database di produzione
+- **PostgreSQL** - Database di sviluppo e produzione
 
 ### Autenticazione
 - **NextAuth.js 4.24.5** - Soluzione auth completa
@@ -317,8 +316,8 @@ npm run dev
 
 #### Sviluppo Locale
 ```bash
-# Database (SQLite per sviluppo)
-DATABASE_URL="file:./dev.db"
+# Database (PostgreSQL)
+DATABASE_URL="postgresql://localhost:5432/dev_db"
 
 # NextAuth.js
 NEXTAUTH_URL="http://localhost:3000"
@@ -425,10 +424,10 @@ model Expense {
 ### Migrazioni Database
 
 ```bash
-# Sviluppo (SQLite)
-npx prisma db push
+# Sviluppo
+npx prisma migrate dev
 
-# Produzione (PostgreSQL)
+# Produzione
 npx prisma migrate deploy
 
 # Reset database

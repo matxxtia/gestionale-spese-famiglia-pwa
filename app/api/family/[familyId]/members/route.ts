@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { authOptions } from '../../../../../lib/auth';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
 
 // Funzione per generare username unico
 function generateUsername(name: string): string {
@@ -84,7 +83,7 @@ export async function GET(
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // Prisma handled via global instance
   }
 }
 
@@ -212,6 +211,6 @@ export async function POST(
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // Prisma handled via global instance
   }
 }
