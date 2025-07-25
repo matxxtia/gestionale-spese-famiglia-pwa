@@ -3,12 +3,18 @@ import 'dotenv/config';
 
 // Schema di validazione per le variabili d'ambiente
 const envSchema = z.object({
-  DATABASE_URL: z.string().url().refine(
-    (url) => url.startsWith('postgresql://') || url.startsWith('postgres://'),
-    {
-      message: "DATABASE_URL must start with 'postgresql://' or 'postgres://'"
-    }
-  ),
+  DATABASE_URL: z
+    .string()
+    .refine(
+      (url) =>
+        url.startsWith('postgresql://') ||
+        url.startsWith('postgres://') ||
+        url.startsWith('file:'),
+      {
+        message:
+          "DATABASE_URL must start with 'postgresql://', 'postgres://' or 'file:'"
+      }
+    ),
   NEXTAUTH_URL: z.string().url(),
   NEXTAUTH_SECRET: z.string().min(30, {
     message: "NEXTAUTH_SECRET must be at least 30 characters long"
