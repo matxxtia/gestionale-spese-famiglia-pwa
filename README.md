@@ -306,7 +306,7 @@ cp .env.example .env.local
 
 # 4. Setup database
 npx prisma generate
-npx prisma db push
+npx prisma migrate dev --name init
 
 # 5. Avvio server sviluppo
 npm run dev
