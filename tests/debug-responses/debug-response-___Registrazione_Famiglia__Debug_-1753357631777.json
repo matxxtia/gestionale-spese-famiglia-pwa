@@ -1,0 +1,23 @@
+{
+  "testName": "🔐 Registrazione Famiglia (Debug)",
+  "timestamp": "2025-07-24T11:47:11.779Z",
+  "response": {
+    "status": 500,
+    "headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "application/json",
+      "date": "Thu, 24 Jul 2025 11:47:11 GMT",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "x-matched-path": "/api/auth/register",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "iad1::iad1::b8hw9-1753357631068-ec48912e63f9",
+      "transfer-encoding": "chunked"
+    },
+    "data": {
+      "error": "\nInvalid `prisma.user.findUnique()` invocation:\n\n\nerror: Error validating datasource `db`: the URL must start with the protocol `file:`.\n  -->  schema.prisma:10\n   | \n 9 |   provider = \"sqlite\"\n10 |   url      = env(\"DATABASE_URL\")\n   | \n\nValidation Error Count: 1"
+    },
+    "rawData": "{\"error\":\"\\nInvalid `prisma.user.findUnique()` invocation:\\n\\n\\nerror: Error validating datasource `db`: the URL must start with the protocol `file:`.\\n  -->  schema.prisma:10\\n   | \\n 9 |   provider = \\\"sqlite\\\"\\n10 |   url      = env(\\\"DATABASE_URL\\\")\\n   | \\n\\nValidation Error Count: 1\"}"
+  }
+}

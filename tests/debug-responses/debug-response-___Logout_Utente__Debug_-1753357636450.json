@@ -1,0 +1,29 @@
+{
+  "testName": "🚪 Logout Utente (Debug)",
+  "timestamp": "2025-07-24T11:47:16.451Z",
+  "response": {
+    "status": 200,
+    "headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "application/json",
+      "date": "Thu, 24 Jul 2025 11:47:15 GMT",
+      "server": "Vercel",
+      "set-cookie": [
+        "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=lax",
+        "next-auth.csrf-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=lax",
+        "__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=lax"
+      ],
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+      "x-matched-path": "/api/auth/signout",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "iad1::iad1::n74z8-1753357635771-0d5b83aee3ed",
+      "transfer-encoding": "chunked"
+    },
+    "data": {
+      "message": "Logout effettuato con successo",
+      "success": true
+    },
+    "rawData": "{\"message\":\"Logout effettuato con successo\",\"success\":true}"
+  }
+}

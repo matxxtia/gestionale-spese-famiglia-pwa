@@ -41,6 +41,24 @@ Rendere più specifici i test per eseguire debug completo sul processo di autent
 **Problema**: Metodo POST mancante per creazione famiglia
 **Soluzione**: Aggiunto metodo POST per creare nuove famiglie
 
+### 3. ✅ Errore TypeScript Credentials
+**File**: `app/api/auth/credentials/route.ts`
+**Problema**: Errore di compilazione TypeScript - 'dbError' di tipo 'unknown'
+**Soluzione**: Aggiunta verifica del tipo per gestire correttamente l'errore
+**Status**: ✅ Corretto e deployato (commit 07deb89)
+
+### 4. ✅ Errore TypeScript Signout
+**File**: `app/api/auth/signout/route.ts`
+**Problema**: Errore di compilazione TypeScript - array 'Set-Cookie' non compatibile con HeadersInit
+**Soluzione**: Utilizzato response.headers.set() e response.headers.append() per gestire i cookie
+**Status**: ✅ Corretto e deployato (commit 61e6853)
+
+### 5. ✅ Errore TypeScript Family
+**File**: `app/api/family/route.ts`
+**Problema**: Errore di compilazione TypeScript - campo 'name' mancante per FamilyMember
+**Soluzione**: Aggiunto campo name utilizzando session.user.name || session.user.username || 'Admin'
+**Status**: ✅ Corretto e deployato (commit 9111065)
+
 ## 📋 Problemi Identificati
 
 ### 🔴 Problemi Critici (da risolvere)
@@ -54,12 +72,13 @@ Rendere più specifici i test per eseguire debug completo sul processo di autent
   - Verificare middleware di autenticazione
 
 #### 2. Deployment Vercel
-- **Status**: Modifiche locali non deployate
-- **Causa**: Le correzioni sono solo in locale
-- **Azioni necessarie**:
-  - Commit e push delle modifiche
-  - Trigger del deployment Vercel
-  - Verifica che le variabili d'ambiente siano configurate
+- **Status**: ✅ Deployment completato con successo
+- **Ultimo commit**: 9111065 - Fix TypeScript error in family route - add required name field for FamilyMember
+- **Azioni completate**:
+  - ✅ Commit e push delle modifiche
+  - ✅ Trigger del deployment Vercel
+  - ✅ Correzione di tutti gli errori di build TypeScript
+  - ✅ Risolti errori in credentials, signout e family routes
 
 ### 🟡 Problemi Secondari
 

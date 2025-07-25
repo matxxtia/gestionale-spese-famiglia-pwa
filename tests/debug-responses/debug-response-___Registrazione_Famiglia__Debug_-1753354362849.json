@@ -1,0 +1,23 @@
+{
+  "testName": "🔐 Registrazione Famiglia (Debug)",
+  "timestamp": "2025-07-24T10:52:42.851Z",
+  "response": {
+    "status": 400,
+    "headers": {
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "application/json",
+      "date": "Thu, 24 Jul 2025 10:52:42 GMT",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url",
+      "x-matched-path": "/api/auth/register",
+      "x-vercel-cache": "MISS",
+      "x-vercel-id": "iad1::iad1::7gsl2-1753354361964-88fb27ad19b4",
+      "transfer-encoding": "chunked"
+    },
+    "data": {
+      "error": "Nome utente già in uso"
+    },
+    "rawData": "{\"error\":\"Nome utente già in uso\"}"
+  }
+}

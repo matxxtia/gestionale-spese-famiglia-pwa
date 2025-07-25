@@ -1,0 +1,22 @@
+{
+  "testName": "🚪 Logout Utente (Debug)",
+  "timestamp": "2025-07-24T10:52:47.472Z",
+  "response": {
+    "status": 405,
+    "headers": {
+      "age": "80076",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-disposition": "inline",
+      "content-length": "0",
+      "content-type": "text/html; charset=utf-8",
+      "date": "Thu, 24 Jul 2025 10:52:46 GMT",
+      "server": "Vercel",
+      "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+      "x-matched-path": "/",
+      "x-vercel-cache": "HIT",
+      "x-vercel-id": "iad1::4jv8p-1753354366787-41c4446921ad"
+    },
+    "data": "",
+    "rawData": ""
+  }
+}
