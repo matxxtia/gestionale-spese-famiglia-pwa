@@ -306,7 +306,7 @@ cp .env.example .env.local
 
 # 4. Setup database
 npx prisma generate
-npx prisma db push
+npx prisma migrate dev --name init
 
 # 5. Avvio server sviluppo
 npm run dev
@@ -316,8 +316,8 @@ npm run dev
 
 #### Sviluppo Locale
 ```bash
-# Database (PostgreSQL)
-DATABASE_URL="postgresql://localhost:5432/dev_db"
+# Database (SQLite)
+DATABASE_URL="file:./dev.db"
 
 # NextAuth.js
 NEXTAUTH_URL="http://localhost:3000"
