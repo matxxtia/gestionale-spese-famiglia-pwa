@@ -136,10 +136,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Validate and parse amount (Expense.amount is required in schema)
+    const parsedAmount =
+      typeof amount === 'string' ? parseFloat(amount) : typeof amount === 'number' ? amount : NaN
+    if (amount === undefined || Number.isNaN(parsedAmount)) {
+      return NextResponse.json({ error: 'amount is required and must be a valid number' }, { status: 400 })
+    }
+
     const newExpense = await prisma.expense.create({
       data: {
         description,
-        amount: amount !== undefined ? parseFloat(amount) : undefined,
+        amount: parsedAmount,
         categoryId,
         familyId: targetFamilyId,
         location: location || null,
