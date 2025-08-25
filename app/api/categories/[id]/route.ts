@@ -1,75 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-// Note: In a real app, authOptions would be imported from a shared config
-// For now, we'll skip session validation in mock mode
-// import { authOptions } from '../../auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
+import { authOptions } from '@/lib/auth'
+import { getBearerToken, verifyToken } from '@/lib/jwt'
 
-// Mock data - in a real app, this would come from a database
-// This should be shared with the main categories route
-let categories: any[] = [
-  {
-    id: '1',
-    name: 'Alimentari',
-    color: '#10B981',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    name: 'Trasporti',
-    color: '#3B82F6',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '3',
-    name: 'Intrattenimento',
-    color: '#8B5CF6',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '4',
-    name: 'Salute',
-    color: '#EF4444',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+async function getAuthContext(request: NextRequest) {
+  const authHeader = request.headers.get('authorization') || ''
+  const token = getBearerToken(authHeader)
+  if (token) {
+    const secret = process.env.NEXTAUTH_SECRET || 'test-secret'
+    const payload = verifyToken(token, secret)
+    if (payload && payload.user) {
+      return {
+        userId: payload.user.id,
+        familyId: payload.user.familyId || null,
+        tokenValid: true,
+      }
+    }
   }
-]
+
+  const session = await getServerSession(authOptions)
+  if (session && session.user) {
+    return {
+      userId: (session.user as any).id,
+      familyId: (session.user as any).familyId || null,
+      tokenValid: true,
+    }
+  }
+
+  return { userId: null, familyId: null, tokenValid: false }
+}
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    const auth = await getAuthContext(request)
+    if (!auth.tokenValid || !auth.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!auth.familyId) {
+      return NextResponse.json({ error: 'No active family found for user' }, { status: 400 })
+    }
 
     const { id } = params
     const body = await request.json()
-    const { name, color } = body
+    const name = (body?.name ?? undefined) as string | undefined
+    const color = (body?.color ?? undefined) as string | undefined
+    const icon = (body?.icon ?? undefined) as string | undefined
 
-    const categoryIndex = categories.findIndex(category => category.id === id)
-    
-    if (categoryIndex === -1) {
+    // Ensure category belongs to user's family
+    const existing = await prisma.category.findFirst({ where: { id, familyId: auth.familyId } })
+    if (!existing) {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
-    const updatedCategory = {
-      ...categories[categoryIndex],
-      name,
-      color,
-      updatedAt: new Date().toISOString()
+    const updated = await prisma.category.update({
+      where: { id },
+      data: {
+        ...(name !== undefined ? { name } : {}),
+        ...(color !== undefined ? { color } : {}),
+        ...(icon !== undefined ? { icon } : {}),
+      },
+    })
+
+    return NextResponse.json(updated, { status: 200 })
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: 'Category with this name already exists in the family' }, { status: 409 })
     }
-
-    categories[categoryIndex] = updatedCategory
-
-    return NextResponse.json(updatedCategory)
-  } catch (error) {
     console.error('Error updating category:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -77,22 +74,25 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    const auth = await getAuthContext(request)
+    if (!auth.tokenValid || !auth.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!auth.familyId) {
+      return NextResponse.json({ error: 'No active family found for user' }, { status: 400 })
+    }
 
     const { id } = params
-    const categoryIndex = categories.findIndex(category => category.id === id)
-    
-    if (categoryIndex === -1) {
+
+    // Ensure category belongs to user's family
+    const existing = await prisma.category.findFirst({ where: { id, familyId: auth.familyId } })
+    if (!existing) {
       return NextResponse.json({ error: 'Category not found' }, { status: 404 })
     }
 
-    categories.splice(categoryIndex, 1)
+    await prisma.category.delete({ where: { id } })
 
-    return NextResponse.json({ message: 'Category deleted successfully' })
+    return NextResponse.json({ message: 'Category deleted successfully' }, { status: 200 })
   } catch (error) {
     console.error('Error deleting category:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

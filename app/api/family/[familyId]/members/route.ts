@@ -3,11 +3,29 @@ import { getServerSession } from 'next-auth/next';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { authOptions } from '../../../../../lib/auth';
+import { getBearerToken, verifyToken } from '../../../../../lib/jwt';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
+
+async function getAuthContext(request: NextRequest) {
+  const authHeader = request.headers.get('authorization') || ''
+  const token = getBearerToken(authHeader)
+  if (token) {
+    const secret = process.env.NEXTAUTH_SECRET || 'test-secret'
+    const payload = verifyToken(token, secret)
+    if (payload?.user?.id) {
+      return { userId: payload.user.id }
+    }
+  }
+  const session = await getServerSession(authOptions)
+  if (session?.user?.id) {
+    return { userId: session.user.id as string }
+  }
+  return { userId: null as string | null }
+}
 
 // Funzione per generare username unico
 function generateUsername(name: string): string {
@@ -32,9 +50,9 @@ export async function GET(
   { params }: { params: { familyId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const auth = await getAuthContext(request);
     
-    if (!session?.user?.id) {
+    if (!auth.userId) {
       return NextResponse.json(
         { error: 'Non autorizzato' },
         { status: 401 }
@@ -45,7 +63,7 @@ export async function GET(
     const familyMember = await prisma.familyMember.findFirst({
       where: {
         familyId: params.familyId,
-        userId: session.user.id,
+        userId: auth.userId,
         isActive: true
       }
     });
@@ -94,9 +112,9 @@ export async function POST(
   { params }: { params: { familyId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const auth = await getAuthContext(request);
     
-    if (!session?.user?.id) {
+    if (!auth.userId) {
       return NextResponse.json(
         { error: 'Non autorizzato' },
         { status: 401 }
@@ -107,7 +125,7 @@ export async function POST(
     const adminMember = await prisma.familyMember.findFirst({
       where: {
         familyId: params.familyId,
-        userId: session.user.id,
+        userId: auth.userId,
         role: 'admin',
         isActive: true
       }
@@ -202,9 +220,9 @@ export async function POST(
       member: result.newMember,
       credentials: {
         username,
-        password // Password in chiaro solo per la risposta iniziale
+        password
       }
-    });
+    }, { status: 201 });
   } catch (error) {
     console.error('Errore nell\'aggiunta del membro:', error);
     return NextResponse.json(

@@ -111,4 +111,5 @@ model Expense {
   paidBy      FamilyMember @relation(fields: [paidById], references: [id])
   family      Family       @relation(fields: [familyId], references: [id], onDelete: Cascade)
   category    Category     @relation(fields: [categoryId], references: [id])
+  customSplit String?
 }

@@ -1,61 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
-// Note: In a real app, authOptions would be imported from a shared config
-// For now, we'll skip session validation in mock mode
-// import { authOptions } from '../auth/[...nextauth]/route'
+import { prisma } from '@/lib/prisma'
+import { authOptions } from '@/lib/auth'
+import { getBearerToken, verifyToken } from '@/lib/jwt'
 
-// Mock data - in a real app, this would come from a database
-let categories: any[] = [
-  {
-    id: '1',
-    name: 'Alimentari',
-    color: '#10B981',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    name: 'Trasporti',
-    color: '#3B82F6',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '3',
-    name: 'Intrattenimento',
-    color: '#8B5CF6',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '4',
-    name: 'Salute',
-    color: '#EF4444',
-    familyId: '1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+async function getAuthContext(request: NextRequest) {
+  // Prefer Bearer token (used by tests), fallback to NextAuth session
+  const authHeader = request.headers.get('authorization') || ''
+  const token = getBearerToken(authHeader)
+  if (token) {
+    const secret = process.env.NEXTAUTH_SECRET || 'test-secret'
+    const payload = verifyToken(token, secret)
+    if (payload && payload.user) {
+      return {
+        userId: payload.user.id,
+        familyId: payload.user.familyId || null,
+        tokenValid: true,
+      }
+    }
   }
-]
+
+  const session = await getServerSession(authOptions)
+  if (session && session.user) {
+    return {
+      userId: (session.user as any).id,
+      familyId: (session.user as any).familyId || null,
+      tokenValid: true,
+    }
+  }
+
+  return { userId: null, familyId: null, tokenValid: false }
+}
 
 export async function GET(request: NextRequest) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
+    const auth = await getAuthContext(request)
+    if (!auth.tokenValid || !auth.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!auth.familyId) {
+      return NextResponse.json({ error: 'No active family found for user' }, { status: 400 })
+    }
 
-    const { searchParams } = new URL(request.url)
-    const familyId = searchParams.get('familyId')
+    const categories = await prisma.category.findMany({
+      where: { familyId: auth.familyId },
+      orderBy: { name: 'asc' },
+    })
 
-    const filteredCategories = familyId 
-      ? categories.filter(category => category.familyId === familyId)
-      : categories
-
-    return NextResponse.json(filteredCategories)
+    return NextResponse.json(categories, { status: 200 })
   } catch (error) {
     console.error('Error fetching categories:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -64,27 +56,41 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Skip session validation for mock mode
-    // const session = await getServerSession(authOptions)
-    // if (!session) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    // }
-
-    const body = await request.json()
-    const { name, color, familyId } = body
-
-    const newCategory = {
-      id: Date.now().toString(),
-      name,
-      color,
-      familyId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    const auth = await getAuthContext(request)
+    if (!auth.tokenValid || !auth.userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!auth.familyId) {
+      return NextResponse.json({ error: 'No active family found for user' }, { status: 400 })
     }
 
-    categories.push(newCategory)
+    const body = await request.json()
+    const name = (body?.name ?? '').toString().trim()
+    const icon = (body?.icon ?? undefined) as string | undefined
+    const color = (body?.color ?? undefined) as string | undefined
 
-    return NextResponse.json(newCategory, { status: 201 })
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    }
+
+    try {
+      const category = await prisma.category.create({
+        data: {
+          name,
+          icon: icon ?? undefined,
+          color: color ?? undefined,
+          familyId: auth.familyId,
+        },
+      })
+
+      return NextResponse.json(category, { status: 201 })
+    } catch (e: any) {
+      // Handle unique constraint (familyId, name)
+      if (e.code === 'P2002') {
+        return NextResponse.json({ error: 'Category with this name already exists in the family' }, { status: 409 })
+      }
+      throw e
+    }
   } catch (error) {
     console.error('Error creating category:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

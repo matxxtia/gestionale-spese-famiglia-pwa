@@ -2,11 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { PrismaClient } from '@prisma/client';
 import { authOptions } from '../../../../../../lib/auth';
+import { getBearerToken, verifyToken } from '../../../../../../lib/jwt';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
+
+async function getAuthContext(request: NextRequest) {
+  const authHeader = request.headers.get('authorization') || ''
+  const token = getBearerToken(authHeader)
+  if (token) {
+    const secret = process.env.NEXTAUTH_SECRET || 'test-secret'
+    const payload = verifyToken(token, secret)
+    if (payload?.user?.id) {
+      return { userId: payload.user.id }
+    }
+  }
+  const session = await getServerSession(authOptions)
+  if (session?.user?.id) {
+    return { userId: session.user.id as string }
+  }
+  return { userId: null as string | null }
+}
 
 // DELETE - Elimina membro dalla famiglia
 export async function DELETE(
@@ -14,9 +32,9 @@ export async function DELETE(
   { params }: { params: { familyId: string; memberId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const auth = await getAuthContext(request);
     
-    if (!session?.user?.id) {
+    if (!auth.userId) {
       return NextResponse.json(
         { error: 'Non autorizzato' },
         { status: 401 }
@@ -27,7 +45,7 @@ export async function DELETE(
     const adminMember = await prisma.familyMember.findFirst({
       where: {
         familyId: params.familyId,
-        userId: session.user.id,
+        userId: auth.userId,
         role: 'admin',
         isActive: true
       }
@@ -111,9 +129,9 @@ export async function PUT(
   { params }: { params: { familyId: string; memberId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const auth = await getAuthContext(request);
     
-    if (!session?.user?.id) {
+    if (!auth.userId) {
       return NextResponse.json(
         { error: 'Non autorizzato' },
         { status: 401 }
@@ -124,7 +142,7 @@ export async function PUT(
     const adminMember = await prisma.familyMember.findFirst({
       where: {
         familyId: params.familyId,
-        userId: session.user.id,
+        userId: auth.userId,
         role: 'admin',
         isActive: true
       }
