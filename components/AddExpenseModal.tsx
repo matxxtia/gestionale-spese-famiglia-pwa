@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { X, DollarSign, Calendar, MapPin, Tag, User, Users } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,6 +8,7 @@ import { z } from 'zod'
 import { useSession } from 'next-auth/react'
 import { Family, Expense } from '@/types'
 import { useTranslation } from '@/hooks/useTranslation'
+import MotionWrapper, { AnimatePresenceWrapper } from './MotionWrapper'
 
 interface AddExpenseModalProps {
   family: Family
@@ -113,9 +113,9 @@ export default function AddExpenseModal({ family, onAdd, onClose, editingExpense
   }
 
   return (
-    <AnimatePresence>
+    <AnimatePresenceWrapper>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <motion.div
+        <MotionWrapper
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
@@ -298,26 +298,29 @@ export default function AddExpenseModal({ family, onAdd, onClose, editingExpense
               >
                 Annulla
               </button>
-              <motion.button
+              <MotionWrapper
+                type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isSubmitting}
+                // IMPORTANT: html button attribute must still be submit
+                onClick={undefined}
                 className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    {editingExpense ? 'Aggiornamento...' : 'Aggiunta...'}
-                  </div>
-                ) : (
-                  editingExpense ? 'Aggiorna Spesa' : 'Aggiungi Spesa'
-                )}
-              </motion.button>
+                <button type="submit" disabled={isSubmitting} className="w-full">
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      {editingExpense ? 'Aggiornamento...' : 'Aggiunta...'}
+                    </div>
+                  ) : (
+                    editingExpense ? 'Aggiorna Spesa' : 'Aggiungi Spesa'
+                  )}
+                </button>
+              </MotionWrapper>
             </div>
           </form>
-        </motion.div>
+        </MotionWrapper>
       </div>
-    </AnimatePresence>
+    </AnimatePresenceWrapper>
   )
 }

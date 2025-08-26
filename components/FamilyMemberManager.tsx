@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import MotionWrapper, { AnimatePresenceWrapper } from './MotionWrapper'
 import { Plus, Edit, Trash2, Key, Copy, Check, Users, Shield } from 'lucide-react';
 import { useTranslation } from '../hooks/useTranslation';
 
@@ -146,7 +146,7 @@ export default function FamilyMemberManager({ familyId }: FamilyMemberManagerPro
       {/* Lista membri */}
       <div className="grid gap-4">
         {members.map((member) => (
-          <motion.div
+          <MotionWrapper
             key={member.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -193,20 +193,20 @@ export default function FamilyMemberManager({ familyId }: FamilyMemberManagerPro
                 </div>
               )}
             </div>
-          </motion.div>
+          </MotionWrapper>
         ))}
       </div>
 
       {/* Form aggiunta membro */}
-      <AnimatePresence>
+      <AnimatePresenceWrapper>
         {showAddForm && (
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
           >
-            <motion.div
+            <MotionWrapper
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -256,21 +256,21 @@ export default function FamilyMemberManager({ familyId }: FamilyMemberManagerPro
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </motion.div>
+            </MotionWrapper>
+          </MotionWrapper>
         )}
-      </AnimatePresence>
+      </AnimatePresenceWrapper>
 
       {/* Modal credenziali generate */}
-      <AnimatePresence>
+      <AnimatePresenceWrapper>
         {showCredentials && (
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
           >
-            <motion.div
+            <MotionWrapper
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
@@ -352,10 +352,10 @@ export default function FamilyMemberManager({ familyId }: FamilyMemberManagerPro
                   {t('common.close')}
                 </button>
               </div>
-            </motion.div>
-          </motion.div>
+            </MotionWrapper>
+          </MotionWrapper>
         )}
-      </AnimatePresence>
+      </AnimatePresenceWrapper>
     </div>
   );
 }

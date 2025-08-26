@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import MotionWrapper, { AnimatePresenceWrapper } from './MotionWrapper'
 import { X, DollarSign, Calendar, Tag, User, Repeat, Zap, Home, Car } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -152,9 +152,9 @@ export default function RecurringExpenseModal({ family, onAdd, onClose }: Recurr
   }
   
   return (
-    <AnimatePresence>
+    <AnimatePresenceWrapper>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <motion.div
+        <MotionWrapper
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
@@ -342,27 +342,32 @@ export default function RecurringExpenseModal({ family, onAdd, onClose }: Recurr
                 >
                   Annulla
                 </button>
-                <motion.button
+                <MotionWrapper
+                  type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isSubmitting}
+                  // Note: still a submit trigger so keep it as type submit
+                  // but we handle semantic fallback to button
                   className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {}}
                 >
-                  {isSubmitting ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Aggiunta...
-                    </div>
-                  ) : (
-                    'Aggiungi Spesa Ricorrente'
-                  )}
-                </motion.button>
+                  {/* We maintain the button behavior by using a real button inside */}
+                  <button type="submit" disabled={isSubmitting} className="w-full">
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Aggiunta...
+                      </div>
+                    ) : (
+                      'Aggiungi Spesa Ricorrente'
+                    )}
+                  </button>
+                </MotionWrapper>
               </div>
             </form>
           </div>
-        </motion.div>
+        </MotionWrapper>
       </div>
-    </AnimatePresence>
+    </AnimatePresenceWrapper>
   )
 }

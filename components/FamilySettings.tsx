@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Users, Plus, Edit2, Trash2, Percent, Save, X } from 'lucide-react'
 import { Family, FamilyMember } from '@/types'
+import MotionWrapper, { AnimatePresenceWrapper } from './MotionWrapper'
 
 interface FamilySettingsProps {
   family: Family
@@ -126,20 +125,21 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
             <Users className="w-5 h-5" />
             Family Members
           </h3>
-          <motion.button
+          <MotionWrapper
+            type="button"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowAddMember(true)}
             className="btn-primary flex items-center gap-2 text-sm"
-          >
+         >
             <Plus className="w-4 h-4" />
             Add Member
-          </motion.button>
+          </MotionWrapper>
         </div>
 
         <div className="space-y-4">
           {family.members.map((member, index) => (
-            <motion.div
+            <MotionWrapper
               key={member.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -192,50 +192,52 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
                   </button>
                 )}
               </div>
-            </motion.div>
+            </MotionWrapper>
           ))}
         </div>
 
         {/* Add Member Form */}
-        {showAddMember && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200"
-          >
-            <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="Member name"
-                value={newMemberName}
-                onChange={(e) => setNewMemberName(e.target.value)}
-                className="flex-1 input-field"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAddMember()
-                  if (e.key === 'Escape') setShowAddMember(false)
-                }}
-                autoFocus
-              />
-              <button
-                onClick={handleAddMember}
-                disabled={!newMemberName.trim()}
-                className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Add
-              </button>
-              <button
-                onClick={() => {
-                  setShowAddMember(false)
-                  setNewMemberName('')
-                }}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        )}
+        <AnimatePresenceWrapper>
+          {showAddMember && (
+            <MotionWrapper
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200"
+            >
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Member name"
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  className="flex-1 input-field"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAddMember()
+                    if (e.key === 'Escape') setShowAddMember(false)
+                  }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleAddMember}
+                  disabled={!newMemberName.trim()}
+                  className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Add
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAddMember(false)
+                    setNewMemberName('')
+                  }}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </MotionWrapper>
+          )}
+        </AnimatePresenceWrapper>
       </div>
 
       {/* Cost Sharing */}
@@ -252,7 +254,8 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
             >
               Equal Split
             </button>
-            <motion.button
+            <MotionWrapper
+              type="button"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleSaveShares}
@@ -261,13 +264,13 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
             >
               <Save className="w-4 h-4" />
               Save Changes
-            </motion.button>
+            </MotionWrapper>
           </div>
         </div>
 
         <div className="space-y-4">
           {family.members.map((member, index) => (
-            <motion.div
+            <MotionWrapper
               key={member.id}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
@@ -293,7 +296,7 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
                 />
                 <span className="text-gray-500">%</span>
               </div>
-            </motion.div>
+            </MotionWrapper>
           ))}
         </div>
 
@@ -324,7 +327,7 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {family.categories.map((category, index) => (
-            <motion.div
+            <MotionWrapper
               key={category.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -341,7 +344,7 @@ export default function FamilySettings({ family, onUpdate }: FamilySettingsProps
                 />
               </div>
               <span className="font-medium text-gray-900">{category.name}</span>
-            </motion.div>
+            </MotionWrapper>
           ))}
         </div>
       </div>

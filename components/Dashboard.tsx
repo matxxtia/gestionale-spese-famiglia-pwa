@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { motion } from 'framer-motion'
 import { Plus, Users, Settings, LogOut, TrendingUp, Calendar, Tag, Scale, Repeat } from 'lucide-react'
 import Header from './Header'
 import ExpenseList from './ExpenseList'
@@ -14,6 +13,7 @@ import BalanceManager from './BalanceManager'
 import FamilyMemberManager from './FamilyMemberManager'
 import { Expense, Family, FamilyMember } from '@/types'
 import { useTranslation } from '@/hooks/useTranslation'
+import MotionWrapper from './MotionWrapper'
 
 export default function Dashboard() {
   const { data: session } = useSession()
@@ -251,7 +251,7 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -266,9 +266,9 @@ export default function Dashboard() {
                 <Calendar className="w-6 h-6 text-primary-600" />
               </div>
             </div>
-          </motion.div>
+          </MotionWrapper>
 
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -283,9 +283,9 @@ export default function Dashboard() {
                 <TrendingUp className="w-6 h-6 text-green-600" />
               </div>
             </div>
-          </motion.div>
+          </MotionWrapper>
 
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -300,10 +300,10 @@ export default function Dashboard() {
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
             </div>
-          </motion.div>
+          </MotionWrapper>
 
           {/* Balance Summary Card */}
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -319,12 +319,12 @@ export default function Dashboard() {
                 <Scale className="w-6 h-6 text-blue-600" />
               </div>
             </div>
-          </motion.div>
+          </MotionWrapper>
         </div>
 
         {/* Quick Balance Overview */}
         {quickBalances.length > 0 && (
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -370,7 +370,7 @@ export default function Dashboard() {
                 )
               })}
             </div>
-          </motion.div>
+          </MotionWrapper>
         )}
 
         {/* Navigation Tabs */}
@@ -435,7 +435,8 @@ export default function Dashboard() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Recent Expenses</h2>
               <div className="flex gap-3">
-                <motion.button
+                <MotionWrapper
+                     type="button"
                      whileHover={{ scale: 1.02 }}
                      whileTap={{ scale: 0.98 }}
                      onClick={() => setIsAddExpenseModalOpen(true)}
@@ -443,8 +444,9 @@ export default function Dashboard() {
                    >
                      <Plus className="w-4 h-4" />
                      {t('expenses.addExpense')}
-                   </motion.button>
-                <motion.button
+                   </MotionWrapper>
+                <MotionWrapper
+                  type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setShowRecurringModal(true)}
@@ -452,7 +454,7 @@ export default function Dashboard() {
                 >
                   <Repeat className="w-4 h-4" />
                   Spesa Ricorrente
-                </motion.button>
+                </MotionWrapper>
               </div>
             </div>
             <ExpenseList 

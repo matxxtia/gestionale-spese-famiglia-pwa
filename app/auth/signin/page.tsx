@@ -3,8 +3,8 @@
 import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import { LogIn, Users, DollarSign, Shield, Eye, EyeOff } from 'lucide-react'
+import MotionWrapper from '@/components/MotionWrapper'
 
 export default function SignIn() {
   const router = useRouter()
@@ -47,21 +47,21 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-100 flex items-center justify-center p-4">
-      <motion.div
+      <MotionWrapper
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="max-w-md w-full"
       >
         <div className="card text-center">
-          <motion.div
+          <MotionWrapper
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-6"
           >
             <DollarSign className="w-8 h-8 text-white" />
-          </motion.div>
+          </MotionWrapper>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Gestionale Spese Famiglia
@@ -72,7 +72,7 @@ export default function SignIn() {
           </p>
 
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <motion.div
+            <MotionWrapper
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -80,9 +80,9 @@ export default function SignIn() {
             >
               <Users className="w-6 h-6 text-primary-600 mx-auto mb-2" />
               <p className="text-sm text-gray-600">Condivisione Famiglia</p>
-            </motion.div>
+            </MotionWrapper>
             
-            <motion.div
+            <MotionWrapper
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -90,9 +90,9 @@ export default function SignIn() {
             >
               <Shield className="w-6 h-6 text-primary-600 mx-auto mb-2" />
               <p className="text-sm text-gray-600">Sincronizzazione Sicura</p>
-            </motion.div>
+            </MotionWrapper>
             
-            <motion.div
+            <MotionWrapper
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -100,11 +100,11 @@ export default function SignIn() {
             >
               <DollarSign className="w-6 h-6 text-primary-600 mx-auto mb-2" />
               <p className="text-sm text-gray-600">Tracciamento Costi</p>
-            </motion.div>
+            </MotionWrapper>
           </div>
 
           {/* Registration Link */}
-          <motion.div
+          <MotionWrapper
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -119,10 +119,11 @@ export default function SignIn() {
             >
               Crea il tuo gruppo famiglia
             </a>
-          </motion.div>
+          </MotionWrapper>
 
           {/* Credentials Form */}
-          <motion.form
+          <MotionWrapper
+            type="form"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -185,7 +186,7 @@ export default function SignIn() {
             >
               {isLoading ? 'Accesso in corso...' : 'Accedi'}
             </button>
-          </motion.form>
+          </MotionWrapper>
 
 
           
@@ -193,7 +194,7 @@ export default function SignIn() {
             Effettuando l'accesso, accetti i nostri termini di servizio e la politica sulla privacy.
           </p>
         </div>
-      </motion.div>
+      </MotionWrapper>
     </div>
   )
 }
