@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Family, FamilyMember } from '@/types'
 import MotionWrapper, { AnimatePresenceWrapper } from './MotionWrapper'
+import { Users, Plus, Edit2, Trash2, Percent, Save } from 'lucide-react'
 
 interface FamilySettingsProps {
   family: Family
