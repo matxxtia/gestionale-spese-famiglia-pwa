@@ -42,6 +42,7 @@ interface MotionWrapperProps {
   whileTap?: any
   onClick?: () => void
   onSubmit?: (e: any) => void
+  disabled?: boolean
   type?: 'div' | 'button' | 'form' | 'h2' | 'p'
 }
 
@@ -59,6 +60,7 @@ export default function MotionWrapper({
   whileTap,
   onClick,
   onSubmit,
+  disabled,
   type = 'div'
 }: MotionWrapperProps) {
   const motionProps = {
@@ -70,14 +72,15 @@ export default function MotionWrapper({
     whileHover,
     whileTap,
     onClick,
-    onSubmit
+    onSubmit,
+    disabled
   }
 
   // Provide a semantic fallback matching the type to reduce SSR/client diffs
   const Fallback = () => {
     switch (type) {
       case 'button':
-        return <button className={className}>{children}</button>
+        return <button className={className} disabled={disabled}>{children}</button>
       case 'form':
         return <form className={className}>{children}</form>
       case 'h2':
